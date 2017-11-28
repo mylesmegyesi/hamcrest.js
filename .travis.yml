@@ -1,0 +1,14 @@
+sudo: false
+language: node_js
+cache: yarn
+node_js:
+    - "9"
+    - "8"
+
+script:
+  - make test
+  - make lint
+
+branches:
+  - only:
+    - master
