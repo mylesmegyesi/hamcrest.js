@@ -1,0 +1,73 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "allowSyntheticDefaultImports": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    // "alwaysStrict": true, // --strict
+    "baseUrl": ".",
+    "charset": "utf8",
+    "checkJs": false,
+    "declaration": true,
+    //  "declarationDir": null, // File paths are configured externally
+    "diagnostics": false,
+    "disableSizeLimit": true,
+    "downlevelIteration": true,
+    "emitBOM": false,
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": false,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "inlineSourceMap": false,
+    "inlineSources": false,
+    "isolatedModules": false,
+    "jsx": null, // no JSX here
+    // "jsxFactory": null,  // no JSX here
+    "lib": ["ES2017"],
+    "listEmittedFiles": false,
+    "listFiles": false,
+    // "locale": null, // platform specific
+    // "mapRoot": null // Output configured externally
+    // "maxNodeModuleJsDepth": 0, // Only applicable with --allowJs
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "newLine": "lf",
+    // "noEmit": false, // Output is configured externally
+    "noEmitHelpers": true,
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    // "noImplicitAny": true, // --strict
+    "noImplicitReturns": true,
+    // "noImplicitThis": true, // --strict
+    "noImplicitUseStrict": false,
+    "noLib": false,
+    "noResolve": false,
+    "noStrictGenericChecks": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    // "outDir": null, // Output is configured externally
+    // "outFile": null, // Output is configured externally
+    // "paths": {}, // File paths are configured externally
+    "preserveConstEnums": false,
+    "preserveSymlinks": false,
+    "pretty": false,
+    "removeComments": false,
+    // "rootDir": null, // File paths are configured externally
+    "skipLibCheck": false,
+    "sourceMap": true,
+    // "sourceRoot": null, // File paths are configured externally
+    "strict": true,
+    // "strictFunctionTypes": true // --strict
+    // "strictNullChecks": true, // --strict
+    "stripInternal": false,
+    "suppressExcessPropertyErrors": false,
+    "suppressImplicitAnyIndexErrors": false,
+    "target": "ES2017",
+    "traceResolution": false
+    // "types": [], // File paths are configured externally
+    // "typeRoots": [], // File paths are configured externally
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
