@@ -28,8 +28,8 @@ describe("MatcherAssert", () => {
 
     assertThrows(() => { assertThat(1, matcher); }, e => {
       const expectedAssertionMessage =
-        `Expected: something${EOL}` +
-        "     got: something else";
+        `${EOL}Expected: something${EOL}` +
+        `     got: something else${EOL}`;
 
       assertThat(e.message, is(expectedAssertionMessage));
       assertThat(e.showDiff, isFalse());
