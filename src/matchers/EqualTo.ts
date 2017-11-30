@@ -1,7 +1,3 @@
-import isEqual = require("lodash.isequal");
-import isPlainObject = require("lodash.isplainobject");
-import isString = require("lodash.isstring");
-
 import { DescriptionBuilder } from "../DescriptionBuilder";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
@@ -34,16 +30,10 @@ class EqualTo<T> implements Matcher<T> {
   }
 }
 
-function getDefaultToStringFor<T>(expected: T): Show<T> {
-  if (isPlainObject(expected)) {
-    return value => JSON.stringify(value, null, 2);
-  } else if (isString(expected)) {
-    return value => JSON.stringify(value);
-  } else {
-    return value => value.toString();
-  }
+function defaultToString(value: any): string {
+  return `${value}`;
 }
 
-export function equalTo<T>(expected: T, test?: EqualityTester<T>, toString?: Show<T>): Matcher<T> {
-  return new EqualTo<T>(expected, test || isEqual as EqualityTester<T>, toString || getDefaultToStringFor(expected));
+export function equalTo<T>(expected: T, test: EqualityTester<T>, toString?: Show<T>): Matcher<T> {
+  return new EqualTo<T>(expected, test, toString || defaultToString);
 }

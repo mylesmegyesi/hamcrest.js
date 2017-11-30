@@ -32,8 +32,8 @@ describe("StrictlyEqualTo", () => {
     assertEqual(result, {
       matches: false,
       description: buildExpectedEqualToDescription(
-        JSON.stringify(actual, null, 2),
-        JSON.stringify(expected, null, 2),
+        actual.toString(),
+        expected.toString(),
       ),
       diff: {
         expected,

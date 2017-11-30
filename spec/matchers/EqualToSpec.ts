@@ -13,77 +13,6 @@ describe("EqualTo", () => {
     };
   }
 
-  it("matches if two objects are deeply equal", () => {
-    const expected = {
-      a: 1,
-      b: {
-        c: 2,
-      },
-    };
-
-    // Not the same instance
-    const actual = {
-      a: 1,
-      b: {
-        c: 2,
-      },
-    };
-    const matcher = equalTo(expected);
-
-    assertThat(matcher.match(actual), matcherMatches());
-  });
-
-  it("fails if two objects are not deeply equal", () => {
-    const expected = {
-      a: 1,
-      b: {
-        c: 2,
-      },
-    };
-
-    const actual = {
-      a: 1,
-      b: {
-        c: 3,
-      },
-    };
-    const matcher = equalTo(expected);
-
-    const result = matcher.match(actual);
-    assertThat(result, matcherDoesNotMatch());
-    assertEqual(result, {
-      matches: false,
-      description: buildExpectedEqualToDescription(
-        JSON.stringify(actual, null, 2),
-        JSON.stringify(expected, null, 2),
-      ),
-      diff: {
-        expected,
-        actual,
-      },
-    });
-  });
-
-  it("fails if two strings are not deeply equal", () => {
-    const expected = "something";
-    const actual = "something else";
-    const matcher = equalTo(expected);
-
-    const result = matcher.match(actual);
-    assertThat(result, matcherDoesNotMatch());
-    assertEqual(result, {
-      matches: false,
-      description: buildExpectedEqualToDescription(
-        "\"something else\"",
-        "\"something\"",
-      ),
-      diff: {
-        expected,
-        actual,
-      },
-    });
-  });
-
   it("matches if the given equality tester returns true", () => {
     const expected: string = "something";
     const actual = "something else";
@@ -107,8 +36,8 @@ describe("EqualTo", () => {
     assertEqual(result, {
       matches: false,
       description: buildExpectedEqualToDescription(
-        "\"something\"",
-        "\"something\"",
+        "something",
+        "something",
       ),
       diff: {
         expected,
