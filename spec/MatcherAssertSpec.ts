@@ -1,8 +1,8 @@
 import { EOL } from "os";
 
-import { assertThat } from "../src";
+import { assertThat, is } from "../src";
 
-import { assertSame, assertThrows } from "./BootstrapAssertions";
+import { assertFalse, assertThrows, assertTrue } from "./BootstrapAssertions";
 import { mockMatcherThatFails, mockMatcherThatMatches } from "./MockMatcher";
 
 describe("MatcherAssert", () => {
@@ -11,8 +11,8 @@ describe("MatcherAssert", () => {
 
     assertThat(1, matcher);
 
-    assertSame(1, matcher.actual);
-    assertSame(1, matcher.matchCalledCount);
+    assertThat(matcher.actual, is(1));
+    assertThat(matcher.matchCalledCount, is(1));
   });
 
   it("assertThat throws when the match fails", () => {
@@ -31,9 +31,9 @@ describe("MatcherAssert", () => {
         `Expected: something${EOL}` +
         "     got: something else";
 
-      assertSame(expectedAssertionMessage, e.message);
-      assertSame(false, e.showDiff);
-      assertSame(1, matcher.matchCalledCount);
+      assertThat(e.message, is(expectedAssertionMessage));
+      assertFalse(e.showDiff);
+      assertThat(matcher.matchCalledCount, is(1));
     });
   });
 
@@ -53,9 +53,9 @@ describe("MatcherAssert", () => {
     });
 
     assertThrows(() => { assertThat(1, matcher); }, e => {
-      assertSame(true, e.showDiff);
-      assertSame("something", e.expected);
-      assertSame("something else", e.actual);
+      assertTrue(e.showDiff);
+      assertThat(e.expected, is("something"));
+      assertThat(e.actual, is("something else"));
     });
   });
 });

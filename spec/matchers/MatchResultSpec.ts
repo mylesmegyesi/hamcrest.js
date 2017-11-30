@@ -1,5 +1,13 @@
-import { Description, FailedMatchResult, matcherDoesNotMatch, matcherMatches } from "../../src";
-import { assertEqual, assertSame, assertTrue } from "../BootstrapAssertions";
+import {
+  assertThat,
+  Description,
+  FailedMatchResult,
+  is,
+  matcherDoesNotMatch,
+  matcherMatches,
+  strictlyEqualTo,
+} from "../../src";
+import { assertEqual, assertTrue } from "../BootstrapAssertions";
 import { mockMatcherThatFails, mockMatcherThatMatches } from "../MockMatcher";
 
 describe("MatchResult matchers", () => {
@@ -79,7 +87,7 @@ describe("MatchResult matchers", () => {
       const result = matcher.match(actual);
 
       assertTrue(result.matches);
-      assertSame(1, resultMatcher.matchCalledCount);
+      assertThat(resultMatcher.matchCalledCount, is(1));
       assertEqual(actual, resultMatcher.actual);
     });
 
@@ -98,7 +106,7 @@ describe("MatchResult matchers", () => {
 
       const result = matcher.match(actual);
 
-      assertSame(result, resultMatcherResult);
+      assertThat(result, strictlyEqualTo(resultMatcherResult));
     });
   });
 });

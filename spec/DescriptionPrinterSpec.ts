@@ -1,9 +1,7 @@
 import { EOL } from "os";
 
-import { Description } from "../src";
+import { assertThat, Description, is } from "../src";
 import { descriptionToString } from "../src/DescriptionPrinter";
-
-import { assertSame } from "./BootstrapAssertions";
 
 describe("DescriptionPrinter", () => {
   it("prints a typical description", () => {
@@ -20,7 +18,7 @@ describe("DescriptionPrinter", () => {
       `Expected: something${EOL}` +
       `     got: something else`;
 
-    assertSame(expected, s);
+    assertThat(s, is(expected));
   });
 
   it("prints a description with the actual label longer that the expected label", () => {
@@ -37,6 +35,6 @@ describe("DescriptionPrinter", () => {
       `          Expected: something${EOL}` +
       `but got this thing: something else`;
 
-    assertSame(expected, s);
+    assertThat(s, is(expected));
   });
 });
