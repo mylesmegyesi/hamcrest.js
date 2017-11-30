@@ -22,10 +22,6 @@ export function assertEqual<T>(expected: T, actual: T): void {
   }
 }
 
-export function assertFalse(actual: boolean): void {
-  assertSame(false, actual);
-}
-
 export function assertThrows(f: () => void, matcher: (e: AssertionError) => void): void {
   let thrownError: AssertionError | null = null;
   try {

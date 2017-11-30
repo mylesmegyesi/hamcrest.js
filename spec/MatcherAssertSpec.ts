@@ -1,8 +1,8 @@
 import { EOL } from "os";
 
-import { assertThat, is, isTrue } from "../src";
+import { assertThat, is, isFalse, isTrue } from "../src";
 
-import { assertFalse, assertThrows } from "./BootstrapAssertions";
+import { assertThrows } from "./BootstrapAssertions";
 import { mockMatcherThatFails, mockMatcherThatMatches } from "./MockMatcher";
 
 describe("MatcherAssert", () => {
@@ -32,7 +32,7 @@ describe("MatcherAssert", () => {
         "     got: something else";
 
       assertThat(e.message, is(expectedAssertionMessage));
-      assertFalse(e.showDiff);
+      assertThat(e.showDiff, isFalse());
       assertThat(matcher.matchCalledCount, is(1));
     });
   });
