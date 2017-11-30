@@ -22,10 +22,6 @@ export function assertEqual<T>(expected: T, actual: T): void {
   }
 }
 
-export function assertTrue(actual: boolean): void {
-  assertSame(true, actual);
-}
-
 export function assertFalse(actual: boolean): void {
   assertSame(false, actual);
 }

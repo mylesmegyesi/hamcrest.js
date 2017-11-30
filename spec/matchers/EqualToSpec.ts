@@ -1,7 +1,7 @@
 import * as sinon from "sinon";
 
-import { assertThat, Description, equalTo, matcherDoesNotMatch, matcherMatches } from "../../src";
-import { assertEqual, assertTrue } from "../BootstrapAssertions";
+import { assertThat, Description, equalTo, isTrue, matcherDoesNotMatch, matcherMatches } from "../../src";
+import { assertEqual } from "../BootstrapAssertions";
 
 describe("EqualTo", () => {
   function buildExpectedEqualToDescription(actual: string, expected: string): Description {
@@ -22,8 +22,8 @@ describe("EqualTo", () => {
     const result = matcher.match(actual);
     assertThat(result, matcherMatches());
 
-    assertTrue(test.calledOnce);
-    assertTrue(test.calledWithExactly(expected, actual));
+    assertThat(test.calledOnce, isTrue());
+    assertThat(test.calledWithExactly(expected, actual), isTrue());
   });
 
   it("fails if the given equality tester returns false", () => {

@@ -1,5 +1,4 @@
-import { any } from "../../src";
-import { assertTrue } from "../BootstrapAssertions";
+import { any, assertThat, matcherMatches } from "../../src";
 
 describe("Any", () => {
   it("always matches", () => {
@@ -7,6 +6,6 @@ describe("Any", () => {
 
     const matchResult = matcher.match(1);
 
-    assertTrue(matchResult.matches);
+    assertThat(matchResult, matcherMatches());
   });
 });

@@ -3,11 +3,12 @@ import {
   Description,
   FailedMatchResult,
   is,
+  isTrue,
   matcherDoesNotMatch,
   matcherMatches,
   strictlyEqualTo,
 } from "../../src";
-import { assertEqual, assertTrue } from "../BootstrapAssertions";
+import { assertEqual } from "../BootstrapAssertions";
 import { mockMatcherThatFails, mockMatcherThatMatches } from "../MockMatcher";
 
 describe("MatchResult matchers", () => {
@@ -24,7 +25,7 @@ describe("MatchResult matchers", () => {
 
       const result = matcher.match({ matches: true });
 
-      assertTrue(result.matches);
+      assertThat(result.matches, isTrue());
     });
 
     it("fails when the match result is a not a match", () => {
@@ -56,7 +57,7 @@ describe("MatchResult matchers", () => {
         description: testDescription,
       });
 
-      assertTrue(result.matches);
+      assertThat(result.matches, isTrue());
     });
 
     it("fails when the match result is a match", () => {
@@ -86,7 +87,7 @@ describe("MatchResult matchers", () => {
 
       const result = matcher.match(actual);
 
-      assertTrue(result.matches);
+      assertThat(result.matches, isTrue());
       assertThat(resultMatcher.matchCalledCount, is(1));
       assertEqual(actual, resultMatcher.actual);
     });
