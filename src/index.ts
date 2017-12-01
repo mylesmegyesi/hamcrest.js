@@ -6,6 +6,7 @@ export { allOf } from "./matchers/AllOf";
 export { anyOf } from "./matchers/AnyOf";
 export { anything } from "./matchers/Anything";
 export { equalTo } from "./matchers/EqualTo";
+export { hasProperty } from "./matchers/HasProperty";
 export { is } from "./matchers/Is";
 export { isFalse } from "./matchers/IsFalse";
 export { isTrue } from "./matchers/IsTrue";
