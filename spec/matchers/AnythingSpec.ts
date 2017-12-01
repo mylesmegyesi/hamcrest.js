@@ -1,8 +1,8 @@
-import { any, assertThat, matcherMatches } from "../../src";
+import { anything, assertThat, matcherMatches } from "../../src";
 
-describe("Any", () => {
+describe("Anything", () => {
   it("always matches", () => {
-    const matcher = any();
+    const matcher = anything();
 
     const matchResult = matcher.match(1);
 

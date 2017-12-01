@@ -2,7 +2,9 @@ export { Matcher } from "./Matcher";
 export { MatchResult, MatchedMatchResult, FailedMatchResult, Description, Diff } from "./MatchResult";
 export { assertThat, AssertionError } from "./MatcherAssert";
 
-export { any } from "./matchers/Any";
+export { allOf } from "./matchers/AllOf";
+export { anyOf } from "./matchers/AnyOf";
+export { anything } from "./matchers/Anything";
 export { equalTo } from "./matchers/EqualTo";
 export { is } from "./matchers/Is";
 export { isFalse } from "./matchers/IsFalse";
