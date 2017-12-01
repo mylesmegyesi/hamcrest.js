@@ -2,7 +2,7 @@ import { DescriptionBuilder } from "../DescriptionBuilder";
 import { Matcher } from "../Matcher";
 import { FailedMatchResult, MatchResult } from "../MatchResult";
 
-import { any } from "./Any";
+import { anything } from "./Anything";
 
 class MatchResultMatches implements Matcher<MatchResult> {
   public match(actual: MatchResult): MatchResult {
@@ -44,6 +44,6 @@ export function matcherMatches(): Matcher<MatchResult> {
   return new MatchResultMatches();
 }
 
-export function matcherDoesNotMatch(resultMatcher: Matcher<FailedMatchResult> = any()): Matcher<MatchResult> {
+export function matcherDoesNotMatch(resultMatcher: Matcher<FailedMatchResult> = anything()): Matcher<MatchResult> {
   return new MatchResultFailed(resultMatcher);
 }
