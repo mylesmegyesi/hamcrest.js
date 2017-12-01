@@ -4,15 +4,6 @@ import isEqual = require("lodash.isequal");
 
 import { AssertionError } from "../src";
 
-export function assertSame<T>(expected: T, actual: T): void {
-  if (actual !== expected) {
-    throw new Error(
-      `Expected: ${JSON.stringify(expected, null, 2)}${EOL}` +
-      `     got: ${JSON.stringify(actual, null, 2)}`,
-    );
-  }
-}
-
 export function assertEqual<T>(expected: T, actual: T): void {
   if (!isEqual(expected, actual)) {
     throw new Error(
@@ -20,14 +11,6 @@ export function assertEqual<T>(expected: T, actual: T): void {
       `     got: ${JSON.stringify(actual, null, 2)}`,
     );
   }
-}
-
-export function assertTrue(actual: boolean): void {
-  assertSame(true, actual);
-}
-
-export function assertFalse(actual: boolean): void {
-  assertSame(false, actual);
 }
 
 export function assertThrows(f: () => void, matcher: (e: AssertionError) => void): void {

@@ -29,7 +29,8 @@ export function assertThat<T>(actual: T, matcher: Matcher<T>): void {
   const error = new AssertionError(message, matchResult.diff);
 
   if (error.stack) {
-    error.stack = error.stack.slice(error.stack.indexOf(message) + 1);
+    const stackWithoutMessagePrepended = error.stack.slice(error.stack.indexOf(message) + message.length + 1);
+    error.stack = stackWithoutMessagePrepended.replace(/^.*\r?\n/g, "");
   }
 
   throw error;
