@@ -3,6 +3,7 @@ export { MatchResult, MatchedMatchResult, FailedMatchResult, Description, Diff }
 export { assertThat, AssertionError } from "./MatcherAssert";
 
 export { allOf } from "./matchers/AllOf";
+export { anyOf } from "./matchers/AnyOf";
 export { anything } from "./matchers/Anything";
 export { equalTo } from "./matchers/EqualTo";
 export { is } from "./matchers/Is";
