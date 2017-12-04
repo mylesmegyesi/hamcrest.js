@@ -79,7 +79,7 @@ describe("HasProperties", () => {
     assertThat(bMatcher.actual, is(2));
   });
 
-  it("matches when one property matcher fails", () => {
+  it("fails when one property matcher fails", () => {
     const actual: O = { a: 1, b: 2 };
     const expectedFailureResult: FailedMatchResult = {
       matches: false,

@@ -14,5 +14,6 @@ export { is } from "./matchers/Is";
 export { isFalse } from "./matchers/IsFalse";
 export { isTrue } from "./matchers/IsTrue";
 export { looselyEqualTo } from "./matchers/LooselyEqualTo";
+export { matchesObject } from "./matchers/MatchesObject";
 export { matcherMatches, matcherDoesNotMatch } from "./matchers/MatchResult";
 export { strictlyEqualTo } from "./matchers/StrictlyEqualTo";

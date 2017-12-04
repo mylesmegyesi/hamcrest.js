@@ -2,10 +2,7 @@ import { Matcher } from "../Matcher";
 
 import { allOf } from "./AllOf";
 import { hasProperty } from "./HasProperty";
-
-export type MatcherObject<T> = {
-  [P in keyof T]: Matcher<T[P]>;
-};
+import { MatcherObject } from "./MatcherObject";
 
 export function hasProperties<T>(expected: Partial<MatcherObject<T>>): Matcher<T> {
   const matchers: Matcher<T>[] = [];
