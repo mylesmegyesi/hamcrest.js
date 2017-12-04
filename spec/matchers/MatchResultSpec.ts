@@ -1,6 +1,7 @@
 import {
   assertThat,
   Description,
+  DescriptionBuilder,
   FailedMatchResult,
   is,
   isTrue,
@@ -12,12 +13,10 @@ import { assertEqual } from "../BootstrapAssertions";
 import { mockMatcherThatFails, mockMatcherThatMatches } from "../MockMatcher";
 
 describe("MatchResult matchers", () => {
-  const testDescription: Description = {
-    expectedLabel: "Expected",
-    expected: "something",
-    actualLabel: "got",
-    actual: "something else",
-  };
+  const testDescription: Description = new DescriptionBuilder()
+    .setExpected("something")
+    .setActual("something else")
+    .build();
 
   context("matcherMatches", () => {
     it("matches when the match result is a match", () => {
@@ -38,12 +37,11 @@ describe("MatchResult matchers", () => {
 
       assertEqual(result, {
         matches: false,
-        description: {
-          expectedLabel: "Expected",
-          expected: "matcher to match",
-          actualLabel: "but",
-          actual: "it didn't",
-        },
+        description: new DescriptionBuilder()
+          .setExpected("matcher to match")
+          .setActualLabel("but")
+          .setActual("it didn't")
+          .build(),
       });
     });
   });
@@ -67,12 +65,11 @@ describe("MatchResult matchers", () => {
 
       assertEqual(result, {
         matches: false,
-        description: {
-          expectedLabel: "Expected",
-          expected: "matcher not to match",
-          actualLabel: "but",
-          actual: "it did",
-        },
+        description: new DescriptionBuilder()
+          .setExpected("matcher not to match")
+          .setActualLabel("but")
+          .setActual("it did")
+          .build(),
       });
     });
 

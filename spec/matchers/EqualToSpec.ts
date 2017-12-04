@@ -1,18 +1,9 @@
 import * as sinon from "sinon";
 
-import { assertThat, Description, equalTo, isTrue, matcherDoesNotMatch, matcherMatches } from "../../src";
+import { assertThat, DescriptionBuilder, equalTo, isTrue, matcherDoesNotMatch, matcherMatches } from "../../src";
 import { assertEqual } from "../BootstrapAssertions";
 
 describe("EqualTo", () => {
-  function buildExpectedEqualToDescription(actual: string, expected: string): Description {
-    return {
-      expectedLabel: "Expected",
-      expected,
-      actualLabel: "got",
-      actual,
-    };
-  }
-
   it("matches if the given equality tester returns true", () => {
     const expected: string = "something";
     const actual = "something else";
@@ -35,10 +26,10 @@ describe("EqualTo", () => {
     assertThat(result, matcherDoesNotMatch());
     assertEqual(result, {
       matches: false,
-      description: buildExpectedEqualToDescription(
-        "something",
-        "something",
-      ),
+      description: new DescriptionBuilder()
+        .setExpected("something")
+        .setActual("something")
+        .build(),
       diff: {
         expected,
         actual: expected,
@@ -59,10 +50,10 @@ describe("EqualTo", () => {
     assertThat(result, matcherDoesNotMatch());
     assertEqual(result, {
       matches: false,
-      description: buildExpectedEqualToDescription(
-        "secondCall",
-        "firstCall",
-      ),
+      description: new DescriptionBuilder()
+        .setExpected("firstCall")
+        .setActual("secondCall")
+        .build(),
       diff: {
         expected,
         actual,

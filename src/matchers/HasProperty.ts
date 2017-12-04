@@ -15,9 +15,9 @@ class HasProperty<T, K extends keyof T> implements Matcher<T> {
       } else {
         return {
           matches: false,
-          description: new DescriptionBuilder()
-            .appendToExpected(`an object with property "${this.property}" matching ${valueMatchResult.description.expected}`)
-            .appendToActual(valueMatchResult.description.actual)
+          description: new DescriptionBuilder(valueMatchResult.description)
+            .resetExpectedLabelToDefault()
+            .prependToExpected(`an object with property "${this.property}" matching `)
             .build(),
           diff: valueMatchResult.diff,
         };

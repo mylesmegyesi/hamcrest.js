@@ -1,4 +1,4 @@
-import { assertThat, FailedMatchResult, hasProperty, is, matcherDoesNotMatch, matcherMatches } from "../../src";
+import { assertThat, DescriptionBuilder, FailedMatchResult, hasProperty, is, matcherDoesNotMatch, matcherMatches } from "../../src";
 import { assertEqual } from "../BootstrapAssertions";
 import { MockMatcher, mockMatcherThatFails, mockMatcherThatMatches } from "../MockMatcher";
 
@@ -67,24 +67,20 @@ describe("HasProperty", () => {
 
     assertEqual(hasPropertyResult, {
       matches: false,
-      description: {
-        expectedLabel: "Expected",
-        expected: `an object with property "b"`,
-        actualLabel: "got",
-        actual: `{\n  \"a\": 1\n}`,
-      },
+      description: new DescriptionBuilder()
+        .setExpected(`an object with property "b"`)
+        .setActual(JSON.stringify(actual, null, 2))
+        .build(),
     });
   });
 
   it("fails if the keys is present and the value matcher fails", () => {
     const valueMatchFailure: FailedMatchResult = {
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "expected",
-        actualLabel: "a",
-        actual: "actual",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("expected")
+        .setActual("actual")
+        .build(),
       diff: {
         expected: 1,
         actual: 2,
@@ -104,12 +100,10 @@ describe("HasProperty", () => {
 
     assertEqual(hasPropertyResult, {
       matches: false,
-      description: {
-        expectedLabel: "Expected",
-        expected: `an object with property "b" matching expected`,
-        actualLabel: "got",
-        actual: "actual",
-      },
+      description: new DescriptionBuilder()
+        .setExpected(`an object with property "b" matching expected`)
+        .setActual("actual")
+        .build(),
       diff: {
         expected: 1,
         actual: 2,

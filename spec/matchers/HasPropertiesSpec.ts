@@ -1,6 +1,7 @@
 import {
   anything,
   assertThat,
+  DescriptionBuilder,
   FailedMatchResult,
   hasProperties,
   is,
@@ -52,12 +53,10 @@ describe("HasProperties", () => {
     assertThat(hasPropertiesResult, matcherDoesNotMatch());
     assertEqual(hasPropertiesResult, {
       matches: false,
-      description: {
-        expectedLabel: "Expected",
-        expected: `an object with property "c"`,
-        actualLabel: "got",
-        actual: JSON.stringify(actual, null, 2),
-      },
+      description: new DescriptionBuilder()
+        .setExpected(`an object with property "c"`)
+        .setActual(JSON.stringify(actual, null, 2))
+        .build(),
     });
   });
 
@@ -84,12 +83,10 @@ describe("HasProperties", () => {
     const actual: O = { a: 1, b: 2 };
     const expectedFailureResult: FailedMatchResult = {
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "a",
-        actualLabel: "a",
-        actual: "b",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("a")
+        .setActual("b")
+        .build(),
       diff: {
         expected: 1,
         actual: 2,
@@ -110,12 +107,10 @@ describe("HasProperties", () => {
 
     assertEqual(hasPropertiesResult, {
       matches: false,
-      description: {
-        expectedLabel: "Expected",
-        expected: `an object with property "a" matching a`,
-        actualLabel: "got",
-        actual: "b",
-      },
+      description: new DescriptionBuilder()
+        .setExpected(`an object with property "a" matching a`)
+        .setActual("b")
+        .build(),
       diff: {
         expected: 1,
         actual: 2,

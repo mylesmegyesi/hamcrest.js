@@ -15,7 +15,10 @@ export type Description = Readonly<{
   expected: string;
   actualLabel: string;
   actual: string;
+  extraLines: ReadonlyArray<DescriptionLine>;
 }>;
+
+export type DescriptionLine = Readonly<[string, string]>;
 
 export type Diff = Readonly<{
   expected: any;

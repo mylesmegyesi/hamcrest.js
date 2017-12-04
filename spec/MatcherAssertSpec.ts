@@ -1,6 +1,6 @@
 import { EOL } from "os";
 
-import { assertThat, is, isFalse, isTrue } from "../src";
+import { assertThat, DescriptionBuilder, is, isFalse, isTrue } from "../src";
 
 import { assertThrows } from "./BootstrapAssertions";
 import { mockMatcherThatFails, mockMatcherThatMatches } from "./MockMatcher";
@@ -18,17 +18,15 @@ describe("MatcherAssert", () => {
   it("assertThat throws when the match fails", () => {
     const matcher = mockMatcherThatFails({
       matches: false,
-      description: {
-        expectedLabel: "Expected",
-        expected: "something",
-        actualLabel: "got",
-        actual: "something else",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("something")
+        .setActual("something else")
+        .build(),
     });
 
     assertThrows(() => { assertThat(1, matcher); }, e => {
-      const expectedAssertionMessage =
-        `${EOL}Expected: something${EOL}` +
+      const expectedAssertionMessage = `${EOL}` +
+        `Expected: something${EOL}` +
         `     got: something else${EOL}`;
 
       assertThat(e.message, is(expectedAssertionMessage));
@@ -40,12 +38,10 @@ describe("MatcherAssert", () => {
   it("assertThat sets showDiff when return in the result", () => {
     const matcher = mockMatcherThatFails({
       matches: false,
-      description: {
-        expectedLabel: "Expected",
-        expected: "something",
-        actualLabel: "got",
-        actual: "something else",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("something")
+        .setActual("something else")
+        .build(),
       diff: {
         expected: "something",
         actual: "something else",
