@@ -15,7 +15,7 @@ export class DescriptionBuilder {
       this.actualLabel = description.actualLabel;
       this.expected = description.expected;
       this.expectedLabel = description.expectedLabel;
-      this.extraLines = description.extraLines.concat();
+      this.extraLines = description.extraLines.slice(0);
     }
   }
 
@@ -60,7 +60,7 @@ export class DescriptionBuilder {
   }
 
   public addLine(label: string, value: string): this {
-    this.extraLines.push([label, value]);
+    this.extraLines.push({ label, value });
     return this;
   }
 
