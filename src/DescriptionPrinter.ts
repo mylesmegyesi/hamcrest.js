@@ -9,22 +9,28 @@ function indent(value: string, size: number): string {
 }
 
 function buildLines(lines: DescriptionLine[]): string {
-  const longestLabel = Math.max(...lines.map(line => line[0].length));
+  const longestLabel = Math.max(...lines.map(line => line.label.length));
   return EOL + lines.map(line => {
-    const bufferSize = longestLabel - line[0].length;
+    const bufferSize = longestLabel - line.label.length;
     const buffer = " ".repeat(bufferSize);
-    const label = `${buffer}${line[0]}`;
+    const label = `${buffer}${line.label}`;
     const separator = `: `;
     const indentSize = label.length + separator.length;
-    const value = indent(line[1], indentSize);
+    const value = indent(line.value, indentSize);
     return `${label}${separator}${value}`;
   }).join(EOL) + EOL;
 }
 
 export function descriptionToString(description: Description): string {
   return buildLines([
-    [description.expectedLabel, description.expected],
-    [description.actualLabel, description.actual],
+    {
+      label: description.expectedLabel,
+      value: description.expected,
+    },
+    {
+      label: description.actualLabel,
+      value: description.actual,
+    },
     ...description.extraLines,
   ]);
 }

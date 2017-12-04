@@ -11,8 +11,14 @@ describe("DescriptionPrinter", () => {
       actualLabel: "got",
       actual: "something else",
       extraLines: [
-        ["extra 1", "extra value 1"],
-        ["extra 2", "extra value 2"],
+        {
+          label: "extra 1",
+          value: "extra value 1",
+        },
+        {
+          label: "extra 2",
+          value: "extra value 2",
+        },
       ],
     };
 
