@@ -1,6 +1,7 @@
 import {
   allOf,
   assertThat,
+  DescriptionBuilder,
   FailedMatchResult,
   is,
   matcherDoesNotMatch,
@@ -31,12 +32,10 @@ describe("AllOf", () => {
     const matcher1 = mockMatcherThatMatches();
     const expectedResult: FailedMatchResult = {
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "1",
-        actualLabel: "a",
-        actual: "2",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("1")
+        .setActual("2")
+        .build(),
     };
     const matcher2 = mockMatcherThatFails(expectedResult);
     const matcher3 = mockMatcherThatMatches();

@@ -1,18 +1,9 @@
 import * as sinon from "sinon";
 
-import { assertThat, Description, looselyEqualTo, matcherDoesNotMatch, matcherMatches } from "../../src";
+import { assertThat, DescriptionBuilder, looselyEqualTo, matcherDoesNotMatch, matcherMatches } from "../../src";
 import { assertEqual } from "../BootstrapAssertions";
 
 describe("LooselyEqualTo", () => {
-  function buildExpectedEqualToDescription(actual: string, expected: string): Description {
-    return {
-      expectedLabel: "Expected",
-      expected,
-      actualLabel: "got",
-      actual,
-    };
-  }
-
   it("matches if two objects are loosely equal", () => {
     const value: any = "";
 
@@ -29,10 +20,10 @@ describe("LooselyEqualTo", () => {
     assertThat(result, matcherDoesNotMatch());
     assertEqual(result, {
       matches: false,
-      description: buildExpectedEqualToDescription(
-        Number.NaN.toString(),
-        Number.NaN.toString(),
-      ),
+      description: new DescriptionBuilder()
+        .setExpected(Number.NaN.toString())
+        .setActual(Number.NaN.toString())
+        .build(),
       diff: {
         expected: Number.NaN,
         actual: Number.NaN,
@@ -53,10 +44,10 @@ describe("LooselyEqualTo", () => {
     assertThat(result, matcherDoesNotMatch());
     assertEqual(result, {
       matches: false,
-      description: buildExpectedEqualToDescription(
-        "secondCall",
-        "firstCall",
-      ),
+      description: new DescriptionBuilder()
+        .setExpected("firstCall")
+        .setActual("secondCall")
+        .build(),
       diff: {
         expected,
         actual,

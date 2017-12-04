@@ -10,13 +10,19 @@ describe("DescriptionPrinter", () => {
       expected: "something",
       actualLabel: "got",
       actual: "something else",
+      extraLines: [
+        ["extra 1", "extra value 1"],
+        ["extra 2", "extra value 2"],
+      ],
     };
 
     const s = descriptionToString(description);
 
-    const expected =
-      `${EOL}Expected: something${EOL}` +
-      `     got: something else${EOL}`;
+    const expected = `${EOL}` +
+      `Expected: something${EOL}` +
+      `     got: something else${EOL}` +
+      ` extra 1: extra value 1${EOL}` +
+      ` extra 2: extra value 2${EOL}`;
 
     assertThat(s, is(expected));
   });
@@ -27,12 +33,13 @@ describe("DescriptionPrinter", () => {
       expected: "something",
       actualLabel: "but got this thing",
       actual: "something else",
+      extraLines: [],
     };
 
     const s = descriptionToString(description);
 
-    const expected =
-      `${EOL}          Expected: something${EOL}` +
+    const expected = `${EOL}` +
+      `          Expected: something${EOL}` +
       `but got this thing: something else${EOL}`;
 
     assertThat(s, is(expected));
@@ -44,12 +51,13 @@ describe("DescriptionPrinter", () => {
       expected: `{\n  "a": 1\n}`,
       actualLabel: "got",
       actual: `{\n  "a": 1,\n  "b": 2\n}`,
+      extraLines: [],
     };
 
     const s = descriptionToString(description);
 
-    const expected =
-      `${EOL}Expected: {${EOL}` +
+    const expected = `${EOL}` +
+      `Expected: {${EOL}` +
       `            "a": 1${EOL}` +
       `          }${EOL}` +
       `     got: {${EOL}` +
@@ -66,12 +74,13 @@ describe("DescriptionPrinter", () => {
       expected: `{\r\n  "a": 1\r\n}`,
       actualLabel: "got",
       actual: `{\r\n  "a": 1,\r\n  "b": 2\r\n}`,
+      extraLines: [],
     };
 
     const s = descriptionToString(description);
 
-    const expected =
-      `${EOL}Expected: {${EOL}` +
+    const expected = `${EOL}` +
+      `Expected: {${EOL}` +
       `            "a": 1${EOL}` +
       `          }${EOL}` +
       `     got: {${EOL}` +

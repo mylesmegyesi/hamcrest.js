@@ -1,6 +1,7 @@
 import {
   anyOf,
   assertThat,
+  DescriptionBuilder,
   FailedMatchResult,
   is,
   matcherDoesNotMatch,
@@ -14,12 +15,10 @@ describe("AnyOf", () => {
   it("matches if any of the matchers match", () => {
     const failureResult: FailedMatchResult = {
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "1",
-        actualLabel: "a",
-        actual: "2",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("1")
+        .setActual("2")
+        .build(),
     };
     const matcher1 = mockMatcherThatFails(failureResult);
     const matcher2 = mockMatcherThatMatches();
@@ -45,30 +44,24 @@ describe("AnyOf", () => {
   it("fails if all the matchers fail", () => {
     const matcher1 = mockMatcherThatFails({
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "matcher 1 to match",
-        actualLabel: "a",
-        actual: "actual",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("matcher 1 to match")
+        .setActual("actual")
+        .build(),
     });
     const matcher2 = mockMatcherThatFails({
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "matcher 2 to match",
-        actualLabel: "a",
-        actual: "actual",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("matcher 2 to match")
+        .setActual("actual")
+        .build(),
     });
     const matcher3 = mockMatcherThatFails({
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "matcher 3 to match",
-        actualLabel: "a",
-        actual: "actual",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("matcher 3 to match")
+        .setActual("actual")
+        .build(),
     });
 
     const anyOfMatcher = anyOf(matcher1, matcher2, matcher3);
@@ -79,12 +72,10 @@ describe("AnyOf", () => {
 
     assertEqual(anyOfResult, {
       matches: false,
-      description: {
-        expectedLabel: "Expected",
-        expected: "matcher 1 to match or matcher 2 to match or matcher 3 to match",
-        actualLabel: "got",
-        actual: "actual",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("matcher 1 to match or matcher 2 to match or matcher 3 to match")
+        .setActual("actual")
+        .build(),
     });
     assertThat(matcher1.matchCalledCount, is(1));
     assertThat(matcher1.actual, is("actual"));
@@ -97,21 +88,17 @@ describe("AnyOf", () => {
   it("uses the actual from the first failed matcher", () => {
     const matcher1 = mockMatcherThatFails({
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "matcher 1 to match",
-        actualLabel: "a",
-        actual: "1",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("matcher 1 to match")
+        .setActual("1")
+        .build(),
     });
     const matcher2 = mockMatcherThatFails({
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "matcher 2 to match",
-        actualLabel: "a",
-        actual: "2",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("matcher 2 to match")
+        .setActual("2")
+        .build(),
     });
 
     const anyOfMatcher = anyOf(matcher1, matcher2);
@@ -122,24 +109,20 @@ describe("AnyOf", () => {
 
     assertEqual(anyOfResult, {
       matches: false,
-      description: {
-        expectedLabel: "Expected",
-        expected: "matcher 1 to match or matcher 2 to match",
-        actualLabel: "got",
-        actual: "1",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("matcher 1 to match or matcher 2 to match")
+        .setActual("1")
+        .build(),
     });
   });
 
   it("returns the first matcher's failure result if there is only one matcher given", () => {
     const expectedFailureResult: FailedMatchResult = {
       matches: false,
-      description: {
-        expectedLabel: "e",
-        expected: "matcher 1 to match",
-        actualLabel: "a",
-        actual: "1",
-      },
+      description: new DescriptionBuilder()
+        .setExpected("matcher 1 to match")
+        .setActual("1")
+        .build(),
     };
     const matcher = mockMatcherThatFails(expectedFailureResult);
 

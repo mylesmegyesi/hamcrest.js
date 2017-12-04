@@ -1,18 +1,9 @@
 import * as sinon from "sinon";
 
-import { assertThat, Description, matcherDoesNotMatch, matcherMatches, strictlyEqualTo } from "../../src";
+import { assertThat, DescriptionBuilder, matcherDoesNotMatch, matcherMatches, strictlyEqualTo } from "../../src";
 import { assertEqual } from "../BootstrapAssertions";
 
 describe("StrictlyEqualTo", () => {
-  function buildExpectedEqualToDescription(actual: string, expected: string): Description {
-    return {
-      expectedLabel: "Expected",
-      expected,
-      actualLabel: "got",
-      actual,
-    };
-  }
-
   it("matches if two objects the same instance", () => {
     const value = { a: 1 };
 
@@ -31,10 +22,10 @@ describe("StrictlyEqualTo", () => {
     assertThat(result, matcherDoesNotMatch());
     assertEqual(result, {
       matches: false,
-      description: buildExpectedEqualToDescription(
-        actual.toString(),
-        expected.toString(),
-      ),
+      description: new DescriptionBuilder()
+        .setExpected(expected.toString())
+        .setActual(actual.toString())
+        .build(),
       diff: {
         expected,
         actual,
@@ -55,10 +46,10 @@ describe("StrictlyEqualTo", () => {
     assertThat(result, matcherDoesNotMatch());
     assertEqual(result, {
       matches: false,
-      description: buildExpectedEqualToDescription(
-        "secondCall",
-        "firstCall",
-      ),
+      description: new DescriptionBuilder()
+        .setExpected("firstCall")
+        .setActual("secondCall")
+        .build(),
       diff: {
         expected,
         actual,

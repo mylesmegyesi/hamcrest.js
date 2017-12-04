@@ -1,6 +1,6 @@
 import { EOL } from "os";
 
-import { Description } from "./MatchResult";
+import { Description, DescriptionLine } from "./MatchResult";
 
 function indent(value: string, size: number): string {
   const indentBuffer = " ".repeat(size);
@@ -8,10 +8,8 @@ function indent(value: string, size: number): string {
   return lines.join(`${EOL}${indentBuffer}`);
 }
 
-type Line = [string, string];
-
-function buildLines(lines: Line[]): string {
-  const longestLabel = Math.max(...lines.map((line: string[]): number => line[0].length));
+function buildLines(lines: DescriptionLine[]): string {
+  const longestLabel = Math.max(...lines.map(line => line[0].length));
   return EOL + lines.map(line => {
     const bufferSize = longestLabel - line[0].length;
     const buffer = " ".repeat(bufferSize);
@@ -27,5 +25,6 @@ export function descriptionToString(description: Description): string {
   return buildLines([
     [description.expectedLabel, description.expected],
     [description.actualLabel, description.actual],
+    ...description.extraLines,
   ]);
 }
