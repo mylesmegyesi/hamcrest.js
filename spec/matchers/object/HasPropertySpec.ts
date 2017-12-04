@@ -1,6 +1,14 @@
-import { assertThat, DescriptionBuilder, FailedMatchResult, hasProperty, is, matcherDoesNotMatch, matcherMatches } from "../../src";
-import { assertEqual } from "../BootstrapAssertions";
-import { MockMatcher, mockMatcherThatFails, mockMatcherThatMatches } from "../MockMatcher";
+import {
+  assertThat,
+  DescriptionBuilder,
+  FailedMatchResult,
+  hasProperty,
+  is,
+  matcherDoesNotMatch,
+  matcherMatches,
+} from "../../../src";
+import { assertEqual } from "../../BootstrapAssertions";
+import { MockMatcher, mockMatcherThatFails, mockMatcherThatMatches } from "../../MockMatcher";
 
 describe("HasProperty", () => {
   type O = {

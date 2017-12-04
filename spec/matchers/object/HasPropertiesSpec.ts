@@ -7,9 +7,9 @@ import {
   is,
   matcherDoesNotMatch,
   matcherMatches,
-} from "../../src";
-import { assertEqual } from "../BootstrapAssertions";
-import { mockMatcherThatFails, mockMatcherThatMatches } from "../MockMatcher";
+} from "../../../src";
+import { assertEqual } from "../../BootstrapAssertions";
+import { mockMatcherThatFails, mockMatcherThatMatches } from "../../MockMatcher";
 
 describe("HasProperties", () => {
   type O = {

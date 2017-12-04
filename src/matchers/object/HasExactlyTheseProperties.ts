@@ -1,6 +1,6 @@
-import { DescriptionBuilder } from "../DescriptionBuilder";
-import { Matcher } from "../Matcher";
-import { MatchResult } from "../MatchResult";
+import { DescriptionBuilder } from "../../DescriptionBuilder";
+import { Matcher } from "../../Matcher";
+import { MatchResult } from "../../MatchResult";
 
 function quote(s: string): string {
   return `"${s}"`;

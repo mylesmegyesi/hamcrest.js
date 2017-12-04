@@ -1,6 +1,6 @@
-import { Matcher } from "../Matcher";
+import { Matcher } from "../../Matcher";
+import { allOf } from "../AllOf";
 
-import { allOf } from "./AllOf";
 import { hasExactlyTheseProperties } from "./HasExactlyTheseProperties";
 import { hasProperties } from "./HasProperties";
 import { MatcherObject } from "./MatcherObject";

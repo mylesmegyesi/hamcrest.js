@@ -1,5 +1,5 @@
-import { assertThat, DescriptionBuilder, hasExactlyTheseProperties, matcherDoesNotMatch, matcherMatches } from "../../src";
-import { assertEqual } from "../BootstrapAssertions";
+import { assertThat, DescriptionBuilder, hasExactlyTheseProperties, matcherDoesNotMatch, matcherMatches } from "../../../src";
+import { assertEqual } from "../../BootstrapAssertions";
 
 describe("HasExactlyTheseProperties", () => {
   it("matches if the object only has the given properties", () => {
