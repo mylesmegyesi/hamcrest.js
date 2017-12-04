@@ -20,3 +20,10 @@ lint:
 .PHONY: lint-fix
 lint-fix:
 	$(_LINT) --fix
+
+.PHONY: install
+install:
+	yarn install
+
+.PHONY: ci
+ci: install test lint
