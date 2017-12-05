@@ -1,9 +1,9 @@
 import { DescriptionBuilder } from "../DescriptionBuilder";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
+import { Show, valueToString } from "../ValueToString";
 
 export type EqualityTester<T> = (expected: T, actual: T) => boolean;
-export type Show<T> = (value: T) => string;
 
 class EqualTo<T> implements Matcher<T> {
   public constructor(private expected: T,
@@ -30,10 +30,6 @@ class EqualTo<T> implements Matcher<T> {
   }
 }
 
-function defaultToString(value: any): string {
-  return `${value}`;
-}
-
 export function equalTo<T>(expected: T, test: EqualityTester<T>, toString?: Show<T>): Matcher<T> {
-  return new EqualTo<T>(expected, test, toString || defaultToString);
+  return new EqualTo<T>(expected, test, toString || valueToString);
 }
