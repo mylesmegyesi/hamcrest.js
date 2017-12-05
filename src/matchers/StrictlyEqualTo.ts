@@ -1,8 +1,8 @@
 import { Matcher } from "../Matcher";
-import { Show } from "../ValueToString";
+import { Show, valueToString } from "../ValueToString";
 
 import { equalTo } from "./EqualTo";
 
-export function strictlyEqualTo<T>(expected: T, toString?: Show<T>): Matcher<T> {
-  return equalTo(expected, (e, a) => e === a, toString);
+export function strictlyEqualTo<T>(expected: T, toString: Show<T> = valueToString): Matcher<T> {
+  return equalTo<T, T>(expected, (e, a) => e === a, toString, toString);
 }

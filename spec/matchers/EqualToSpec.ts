@@ -5,10 +5,10 @@ import { assertEqual } from "../BootstrapAssertions";
 
 describe("EqualTo", () => {
   it("matches if the given equality tester returns true", () => {
-    const expected: string = "something";
+    const expected = "something";
     const actual = "something else";
     const test = sinon.stub().returns(true);
-    const matcher = equalTo(expected, test);
+    const matcher = equalTo<string, string>(expected, test);
 
     const result = matcher.match(actual);
     assertThat(result, matcherMatches());
@@ -20,7 +20,7 @@ describe("EqualTo", () => {
   it("fails if the given equality tester returns false", () => {
     const expected = "something";
     const test = sinon.stub().returns(false);
-    const matcher = equalTo(expected, test);
+    const matcher = equalTo<string, string>(expected, test);
 
     const result = matcher.match(expected);
     assertThat(result, matcherDoesNotMatch());
@@ -37,27 +37,32 @@ describe("EqualTo", () => {
     });
   });
 
-  it("prints using the given toString function", () => {
+  it("prints using the given toString functions", () => {
     const expected: string = "something";
     const actual = "something else";
     const test = sinon.stub().returns(false);
-    const toString = sinon.stub();
-    toString.onFirstCall().returns("firstCall");
-    toString.onSecondCall().returns("secondCall");
-    const matcher = equalTo(expected, test, toString);
+    const expectedToString = sinon.stub().returns("expected value");
+    const actualToString = sinon.stub().returns("actual value");
+    const matcher = equalTo(expected, test, expectedToString, actualToString);
 
     const result = matcher.match(actual);
     assertThat(result, matcherDoesNotMatch());
     assertEqual(result, {
       matches: false,
       description: new DescriptionBuilder()
-        .setExpected("firstCall")
-        .setActual("secondCall")
+        .setExpected("expected value")
+        .setActualLabel("got")
+        .setActual("actual value")
         .build(),
       diff: {
         expected,
         actual,
       },
     });
+
+    assertThat(expectedToString.calledOnce, isTrue());
+    assertThat(expectedToString.calledWithExactly(expected), isTrue());
+    assertThat(actualToString.calledOnce, isTrue());
+    assertThat(actualToString.calledWithExactly(actual), isTrue());
   });
 });

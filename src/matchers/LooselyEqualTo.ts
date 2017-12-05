@@ -3,7 +3,7 @@ import { Show } from "../ValueToString";
 
 import { equalTo } from "./EqualTo";
 
-export function looselyEqualTo<T>(expected: T, toString?: Show<T>): Matcher<T> {
+export function looselyEqualTo<E, A>(expected: E, expectedToString?: Show<E>, actualToString?: Show<A>): Matcher<A> {
   // tslint:disable-next-line triple-equals //
-  return equalTo(expected, (e, a) => e == a, toString);
+  return equalTo(expected, (e: any, a: any) => e == a, expectedToString, actualToString);
 }
