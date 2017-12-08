@@ -8,6 +8,7 @@ export * from "./Printing";
 export { allOf } from "./matchers/AllOf";
 export { anyOf } from "./matchers/AnyOf";
 export { anything } from "./matchers/Anything";
+export { equalTo } from "./matchers/EqualTo";
 export { matches, MatcherPredicate } from "./matchers/MatchesPredicate";
 export { hasProperty } from "./matchers/object/HasProperty";
 export { hasProperties } from "./matchers/object/HasProperties";
