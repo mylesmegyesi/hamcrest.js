@@ -27,42 +27,13 @@ describe("EqualTo", () => {
     assertEqual(result, {
       matches: false,
       description: new DescriptionBuilder()
-        .setExpected("something")
-        .setActual("something")
+        .setExpected("\"something\"")
+        .setActual("\"something\"")
         .build(),
       diff: {
         expected,
         actual: expected,
       },
     });
-  });
-
-  it("prints using the given toString functions", () => {
-    const expected: string = "something";
-    const actual = "something else";
-    const test = sinon.stub().returns(false);
-    const expectedToString = sinon.stub().returns("expected value");
-    const actualToString = sinon.stub().returns("actual value");
-    const matcher = equalTo(expected, test, expectedToString, actualToString);
-
-    const result = matcher.match(actual);
-    assertThat(result, matcherDoesNotMatch());
-    assertEqual(result, {
-      matches: false,
-      description: new DescriptionBuilder()
-        .setExpected("expected value")
-        .setActualLabel("got")
-        .setActual("actual value")
-        .build(),
-      diff: {
-        expected,
-        actual,
-      },
-    });
-
-    assertThat(expectedToString.calledOnce, isTrue());
-    assertThat(expectedToString.calledWithExactly(expected), isTrue());
-    assertThat(actualToString.calledOnce, isTrue());
-    assertThat(actualToString.calledWithExactly(actual), isTrue());
   });
 });

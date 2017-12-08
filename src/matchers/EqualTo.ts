@@ -1,15 +1,13 @@
 import { DescriptionBuilder } from "../DescriptionBuilder";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
-import { Show, valueToString } from "../ValueToString";
+import { printValue } from "../Printing";
 
 export type EqualityTester<E, A> = (expected: E, actual: A) => boolean;
 
 class EqualTo<E, A> implements Matcher<A> {
   public constructor(private expected: E,
-                     private test: EqualityTester<E, A>,
-                     private expectedToString: Show<E>,
-                     private actualToString: Show<A>) {}
+                     private test: EqualityTester<E, A>) {}
 
   public match(actual: A): MatchResult {
     if (this.test(this.expected, actual)) {
@@ -18,9 +16,9 @@ class EqualTo<E, A> implements Matcher<A> {
       return {
         matches: false,
         description: new DescriptionBuilder()
-          .appendToExpected(this.expectedToString(this.expected))
+          .appendToExpected(printValue(this.expected))
           .setActualLabel("got")
-          .appendToActual(this.actualToString(actual))
+          .appendToActual(printValue(actual))
           .build(),
         diff: {
           expected: this.expected,
@@ -31,6 +29,6 @@ class EqualTo<E, A> implements Matcher<A> {
   }
 }
 
-export function equalTo<E, A>(expected: E, test: EqualityTester<E, A>, expectedToString: Show<E> = valueToString, actualToString: Show<A> = valueToString): Matcher<A> {
-  return new EqualTo<E, A>(expected, test, expectedToString, actualToString);
+export function equalTo<E, A>(expected: E, test: EqualityTester<E, A>): Matcher<A> {
+  return new EqualTo<E, A>(expected, test);
 }

@@ -6,9 +6,51 @@
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.0.5.tgz#b6e250e281b47e0192e236619e9b1afe62fd345c"
 
+"@types/lodash.isboolean@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.isboolean/-/lodash.isboolean-3.0.3.tgz#a5738ed34dca926cb4f982b57a76f483ae25f344"
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.isequal@^4.5.2":
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/@types/lodash.isequal/-/lodash.isequal-4.5.2.tgz#adbdff67f7c956ed703009e5466a34eeddb0b712"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.isnull@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.isnull/-/lodash.isnull-3.0.3.tgz#8b585c49b33aa012672e1851ae8b17f282b32b09"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.isnumber@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.isnumber/-/lodash.isnumber-3.0.3.tgz#86c37551c1762af42eba550f0917f9cda935b0a7"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.isplainobject@^4.0.3":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.isplainobject/-/lodash.isplainobject-4.0.3.tgz#dbe3a639411f63c9dfada4dfa653aa138c8178d2"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.isstring@^4.0.3":
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.isstring/-/lodash.isstring-4.0.3.tgz#4b6721cf30b7dee496c6c83d9a4fe8521f467a49"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.isundefined@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.isundefined/-/lodash.isundefined-3.0.3.tgz#78bbcfabc5adeafefc9f9c84e8684f07f628853f"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.tostring@^4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.tostring/-/lodash.tostring-4.1.3.tgz#d2bba19476545b02e87017986cee97c68214ea64"
   dependencies:
     "@types/lodash" "*"
 
@@ -232,9 +274,37 @@ lodash.get@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
 
+lodash.isboolean@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/lodash.isboolean/-/lodash.isboolean-3.0.3.tgz#6c2e171db2a257cd96802fd43b01b20d5f5870f6"
+
 lodash.isequal@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+
+lodash.isnull@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/lodash.isnull/-/lodash.isnull-3.0.0.tgz#fafbe59ea1dca27eed786534039dd84c2e07c56e"
+
+lodash.isnumber@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/lodash.isnumber/-/lodash.isnumber-3.0.3.tgz#3ce76810c5928d03352301ac287317f11c0b1ffc"
+
+lodash.isplainobject@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
+
+lodash.isstring@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/lodash.isstring/-/lodash.isstring-4.0.1.tgz#d527dfb5456eca7cc9bb95d5daeaf88ba54a5451"
+
+lodash.isundefined@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/lodash.isundefined/-/lodash.isundefined-3.0.1.tgz#23ef3d9535565203a66cefd5b830f848911afb48"
+
+lodash.tostring@^4.1.4:
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/lodash.tostring/-/lodash.tostring-4.1.4.tgz#560c27d1f8eadde03c2cce198fef5c031d8298fb"
 
 lolex@^1.6.0:
   version "1.6.0"

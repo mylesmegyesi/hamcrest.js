@@ -1,7 +1,4 @@
-import * as sinon from "sinon";
-
-import { assertThat, DescriptionBuilder, is, matcherDoesNotMatch, matcherMatches } from "../../src";
-import { assertEqual } from "../BootstrapAssertions";
+import { assertThat, is, matcherDoesNotMatch, matcherMatches } from "../../src";
 
 describe("Is", () => {
   it("matches if Object.is returns true", () => {
@@ -14,26 +11,5 @@ describe("Is", () => {
     const matcher = is(+0);
 
     assertThat(matcher.match(-0), matcherDoesNotMatch());
-  });
-
-  it("prints using the toString function", () => {
-    const toString = sinon.stub();
-    toString.onFirstCall().returns("firstCall");
-    toString.onSecondCall().returns("secondCall");
-
-    const matcher = is(+0, toString);
-
-    const result = matcher.match(-0);
-    assertEqual(result, {
-      matches: false,
-      description: new DescriptionBuilder()
-        .setExpected("firstCall")
-        .setActual("secondCall")
-        .build(),
-      diff: {
-        expected: +0,
-        actual: -0,
-      },
-    });
   });
 });
