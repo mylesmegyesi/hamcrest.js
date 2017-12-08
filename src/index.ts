@@ -2,7 +2,9 @@ export { DescriptionBuilder } from "./DescriptionBuilder";
 export { Matcher } from "./Matcher";
 export { MatchResult, MatchedMatchResult, FailedMatchResult, Description, Diff } from "./MatchResult";
 export { assertThat, AssertionError } from "./MatcherAssert";
+export * from "./Printing";
 
+// Matchers
 export { allOf } from "./matchers/AllOf";
 export { anyOf } from "./matchers/AnyOf";
 export { anything } from "./matchers/Anything";

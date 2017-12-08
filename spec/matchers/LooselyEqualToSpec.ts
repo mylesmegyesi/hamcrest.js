@@ -1,13 +1,4 @@
-import * as sinon from "sinon";
-
-import {
-  assertThat,
-  DescriptionBuilder,
-  isTrue,
-  looselyEqualTo,
-  matcherDoesNotMatch,
-  matcherMatches,
-} from "../../src";
+import { assertThat, DescriptionBuilder, looselyEqualTo, matcherDoesNotMatch, matcherMatches } from "../../src";
 import { assertEqual } from "../BootstrapAssertions";
 
 describe("LooselyEqualTo", () => {
@@ -36,33 +27,5 @@ describe("LooselyEqualTo", () => {
         actual: Number.NaN,
       },
     });
-  });
-
-  it("prints using the given toString functions", () => {
-    const expected = Number.NaN;
-    const actual = Number.NaN;
-    const expectedToString = sinon.stub().returns("expected value");
-    const actualToString = sinon.stub().returns("actual value");
-
-    const matcher = looselyEqualTo(expected, expectedToString, actualToString);
-
-    const result = matcher.match(actual);
-    assertThat(result, matcherDoesNotMatch());
-    assertEqual(result, {
-      matches: false,
-      description: new DescriptionBuilder()
-        .setExpected("expected value")
-        .setActual("actual value")
-        .build(),
-      diff: {
-        expected,
-        actual,
-      },
-    });
-
-    assertThat(expectedToString.calledOnce, isTrue());
-    assertThat(expectedToString.calledWithExactly(expected), isTrue());
-    assertThat(actualToString.calledOnce, isTrue());
-    assertThat(actualToString.calledWithExactly(actual), isTrue());
   });
 });
