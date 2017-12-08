@@ -3,14 +3,14 @@ import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
 import { printValue } from "../Printing";
 
-export type EqualityTester<E, A> = (expected: E, actual: A) => boolean;
+export type MatcherPredicate<E, A> = (expected: E, actual: A) => boolean;
 
-class EqualTo<E, A> implements Matcher<A> {
+class MatchesPredicate<E, A> implements Matcher<A> {
   public constructor(private expected: E,
-                     private test: EqualityTester<E, A>) {}
+                     private predicate: MatcherPredicate<E, A>) {}
 
   public match(actual: A): MatchResult {
-    if (this.test(this.expected, actual)) {
+    if (this.predicate(this.expected, actual)) {
       return { matches: true };
     } else {
       return {
@@ -29,6 +29,6 @@ class EqualTo<E, A> implements Matcher<A> {
   }
 }
 
-export function equalTo<E, A>(expected: E, test: EqualityTester<E, A>): Matcher<A> {
-  return new EqualTo<E, A>(expected, test);
+export function matches<E, A>(expected: E, predicate: MatcherPredicate<E, A>): Matcher<A> {
+  return new MatchesPredicate<E, A>(expected, predicate);
 }
