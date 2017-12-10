@@ -1,13 +1,4 @@
-import {
-  allOf,
-  assertThat,
-  DescriptionBuilder,
-  FailedMatchResult,
-  is,
-  matcherDoesNotMatch,
-  matcherMatches,
-  strictlyEqualTo,
-} from "../../src";
+import { allOf, assertThat, DescriptionBuilder, equalTo, FailedMatchResult, is, strictlyEqualTo } from "../../src";
 import { mockMatcherThatFails, mockMatcherThatMatches } from "../MockMatcher";
 
 describe("AllOf", () => {
@@ -18,7 +9,7 @@ describe("AllOf", () => {
 
     const allOfMatcher = allOf(matcher1, matcher2, matcher3);
 
-    assertThat(allOfMatcher.match("actual"), matcherMatches());
+    assertThat(allOfMatcher.match("actual"), equalTo({ matches: true }));
 
     assertThat(matcher1.matchCalledCount, is(1));
     assertThat(matcher1.actual, is("actual"));
@@ -42,7 +33,7 @@ describe("AllOf", () => {
 
     const allOfMatcher = allOf(matcher1, matcher2, matcher3);
 
-    assertThat(allOfMatcher.match("actual"), matcherDoesNotMatch(strictlyEqualTo(expectedResult)));
+    assertThat(allOfMatcher.match("actual"), strictlyEqualTo(expectedResult));
 
     assertThat(matcher1.matchCalledCount, is(1));
     assertThat(matcher2.matchCalledCount, is(1));

@@ -1,4 +1,4 @@
-import { assertThat, isFalse, matcherDoesNotMatch, matcherMatches } from "../../src";
+import { assertThat, DescriptionBuilder, equalTo, isFalse } from "../../src";
 
 describe("isTrue", () => {
   it("matches when the actual is false", () => {
@@ -6,7 +6,7 @@ describe("isTrue", () => {
 
     const result = matcher.match(false);
 
-    assertThat(result, matcherMatches());
+    assertThat(result, equalTo({ matches: true }));
   });
 
   it("fails when the actual is false", () => {
@@ -14,6 +14,16 @@ describe("isTrue", () => {
 
     const result = matcher.match(true);
 
-    assertThat(result, matcherDoesNotMatch());
+    assertThat(result, equalTo({
+      matches: false as false,
+      description: new DescriptionBuilder()
+        .setExpected("false")
+        .setActual("true")
+        .build(),
+      diff: {
+        expected: false,
+        actual: true,
+      },
+    }));
   });
 });

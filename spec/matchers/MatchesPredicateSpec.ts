@@ -1,7 +1,6 @@
 import * as sinon from "sinon";
 
-import { assertThat, DescriptionBuilder, isTrue, matcherDoesNotMatch, matcherMatches, matches } from "../../src";
-import { assertEqual } from "../BootstrapAssertions";
+import { assertThat, DescriptionBuilder, equalTo, isTrue, matches } from "../../src";
 
 describe("MatchesPredicate", () => {
   it("matches if the given predicate returns true", () => {
@@ -11,8 +10,8 @@ describe("MatchesPredicate", () => {
     const matcher = matches<string, string>(expected, test);
 
     const result = matcher.match(actual);
-    assertThat(result, matcherMatches());
 
+    assertThat(result, equalTo({ matches: true }));
     assertThat(test.calledOnce, isTrue());
     assertThat(test.calledWithExactly(expected, actual), isTrue());
   });
@@ -20,12 +19,12 @@ describe("MatchesPredicate", () => {
   it("fails if the given equality tester returns false", () => {
     const expected = "something";
     const test = sinon.stub().returns(false);
-    const matcher = matches<string, string>(expected, test);
 
+    const matcher = matches<string, string>(expected, test);
     const result = matcher.match(expected);
-    assertThat(result, matcherDoesNotMatch());
-    assertEqual(result, {
-      matches: false,
+
+    assertThat(result, equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected("\"something\"")
         .setActual("\"something\"")
@@ -34,6 +33,6 @@ describe("MatchesPredicate", () => {
         expected,
         actual: expected,
       },
-    });
+    }));
   });
 });

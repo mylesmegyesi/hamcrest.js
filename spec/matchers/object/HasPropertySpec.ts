@@ -1,13 +1,4 @@
-import {
-  assertThat,
-  DescriptionBuilder,
-  FailedMatchResult,
-  hasProperty,
-  is,
-  matcherDoesNotMatch,
-  matcherMatches,
-} from "../../../src";
-import { assertEqual } from "../../BootstrapAssertions";
+import { assertThat, DescriptionBuilder, equalTo, FailedMatchResult, hasProperty, is } from "../../../src";
 import { MockMatcher, mockMatcherThatFails, mockMatcherThatMatches } from "../../MockMatcher";
 
 describe("HasProperty", () => {
@@ -23,8 +14,9 @@ describe("HasProperty", () => {
     };
 
     const hasPropertyMatcher = hasProperty<O, "b">("b");
+    const result = hasPropertyMatcher.match(actual);
 
-    assertThat(hasPropertyMatcher.match(actual), matcherMatches());
+    assertThat(result, equalTo({ matches: true }));
   });
 
   it("matches without knowing the keys", () => {
@@ -34,8 +26,9 @@ describe("HasProperty", () => {
     };
 
     const hasPropertyMatcher = hasProperty<{ [key: string]: any }, string>("b");
+    const result = hasPropertyMatcher.match(actual);
 
-    assertThat(hasPropertyMatcher.match(actual), matcherMatches());
+    assertThat(result, equalTo({ matches: true }));
   });
 
   it("matches if the object has the property but the value is undefined", () => {
@@ -45,8 +38,9 @@ describe("HasProperty", () => {
     };
 
     const hasPropertyMatcher = hasProperty<O, "b">("b");
+    const result = hasPropertyMatcher.match(actual);
 
-    assertThat(hasPropertyMatcher.match(actual), matcherMatches());
+    assertThat(result, equalTo({ matches: true }));
   });
 
   it("matches if the keys is present and the value matcher matches", () => {
@@ -57,9 +51,9 @@ describe("HasProperty", () => {
     const valueMatcher: MockMatcher<number | undefined> = mockMatcherThatMatches();
 
     const hasPropertyMatcher = hasProperty<O, "b">("b", valueMatcher);
+    const result = hasPropertyMatcher.match(actual);
 
-    assertThat(hasPropertyMatcher.match(actual), matcherMatches());
-
+    assertThat(result, equalTo({ matches: true }));
     assertThat(valueMatcher.matchCalledCount, is(1));
     assertThat(valueMatcher.actual, is(2));
   });
@@ -68,18 +62,15 @@ describe("HasProperty", () => {
     const actual: O = { a: 1 };
 
     const hasPropertyMatcher = hasProperty<O, "b">("b");
+    const result = hasPropertyMatcher.match(actual);
 
-    const hasPropertyResult = hasPropertyMatcher.match(actual);
-
-    assertThat(hasPropertyResult, matcherDoesNotMatch());
-
-    assertEqual(hasPropertyResult, {
-      matches: false,
+    assertThat(result, equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected(`an object with property "b"`)
         .setActual(JSON.stringify(actual, null, 2))
         .build(),
-    });
+    }));
   });
 
   it("fails if the keys is present and the value matcher fails", () => {
@@ -101,13 +92,10 @@ describe("HasProperty", () => {
     };
 
     const hasPropertyMatcher = hasProperty<O, "b">("b", valueMatcher);
+    const result = hasPropertyMatcher.match(actual);
 
-    const hasPropertyResult = hasPropertyMatcher.match(actual);
-
-    assertThat(hasPropertyResult, matcherDoesNotMatch());
-
-    assertEqual(hasPropertyResult, {
-      matches: false,
+    assertThat(result, equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected(`an object with property "b" matching expected`)
         .setActual("actual")
@@ -116,6 +104,6 @@ describe("HasProperty", () => {
         expected: 1,
         actual: 2,
       },
-    });
+    }));
   });
 });
