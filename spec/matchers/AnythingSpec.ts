@@ -1,4 +1,4 @@
-import { anything, assertThat, matcherMatches } from "../../src";
+import { anything, assertThat, equalTo } from "../../src";
 
 describe("Anything", () => {
   it("always matches", () => {
@@ -6,6 +6,6 @@ describe("Anything", () => {
 
     const matchResult = matcher.match(1);
 
-    assertThat(matchResult, matcherMatches());
+    assertThat(matchResult, equalTo({ matches: true }));
   });
 });

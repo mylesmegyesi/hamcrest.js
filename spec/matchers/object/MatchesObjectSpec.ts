@@ -1,14 +1,4 @@
-import {
-  anything,
-  assertThat,
-  DescriptionBuilder,
-  FailedMatchResult,
-  is,
-  matcherDoesNotMatch,
-  matcherMatches,
-  matchesObject,
-} from "../../../src";
-import { assertEqual } from "../../BootstrapAssertions";
+import { anything, assertThat, DescriptionBuilder, equalTo, FailedMatchResult, is, matchesObject } from "../../../src";
 import { mockMatcherThatFails, mockMatcherThatMatches } from "../../MockMatcher";
 
 describe("MatchesObject", () => {
@@ -28,9 +18,9 @@ describe("MatchesObject", () => {
       a: aMatcher,
       b: bMatcher,
     });
+    const result = matchesObjectMatcher.match(actual);
 
-    assertThat(matchesObjectMatcher.match(actual), matcherMatches());
-
+    assertThat(result, equalTo({ matches: true }));
     assertThat(aMatcher.matchCalledCount, is(1));
     assertThat(aMatcher.actual, is(1));
     assertThat(bMatcher.matchCalledCount, is(1));
@@ -58,13 +48,10 @@ describe("MatchesObject", () => {
       a: aMatcher,
       b: bMatcher,
     });
+    const result = matchesObjectMatcher.match(actual);
 
-    const hasPropertiesResult = matchesObjectMatcher.match(actual);
-
-    assertThat(hasPropertiesResult, matcherDoesNotMatch());
-
-    assertEqual(hasPropertiesResult, {
-      matches: false,
+    assertThat(result, equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected(`an object with property "a" matching a`)
         .setActual("b")
@@ -73,8 +60,7 @@ describe("MatchesObject", () => {
         expected: 1,
         actual: 2,
       },
-    });
-
+    }));
     assertThat(aMatcher.matchCalledCount, is(1));
     assertThat(aMatcher.actual, is(1));
     assertThat(bMatcher.matchCalledCount, is(0));
@@ -94,10 +80,8 @@ describe("MatchesObject", () => {
 
     const result = matchesObjectMatcher.match(actual);
 
-    assertThat(result, matcherDoesNotMatch());
-
-    assertEqual(result, {
-      matches: false,
+    assertThat(result, equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected(`an object with only these properties: [ "a", "b" ]`)
         .setActual(JSON.stringify(actual, null, 2))
@@ -116,7 +100,7 @@ describe("MatchesObject", () => {
           "c",
         ],
       },
-    });
+    }));
   });
 
   it("fails if there are any missing keys", () => {
@@ -133,10 +117,8 @@ describe("MatchesObject", () => {
 
     const result = matchesObjectMatcher.match(actual);
 
-    assertThat(result, matcherDoesNotMatch());
-
-    assertEqual(result, {
-      matches: false,
+    assertThat(result, equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected(`an object with only these properties: [ "a", "b", "c" ]`)
         .setActual(JSON.stringify(actual, null, 2))
@@ -155,6 +137,6 @@ describe("MatchesObject", () => {
           "b",
         ],
       },
-    });
+    }));
   });
 });

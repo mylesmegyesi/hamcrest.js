@@ -1,23 +1,19 @@
-import { assertThat, DescriptionBuilder, looselyEqualTo, matcherDoesNotMatch, matcherMatches } from "../../src";
-import { assertEqual } from "../BootstrapAssertions";
+import { assertThat, DescriptionBuilder, equalTo, looselyEqualTo } from "../../src";
 
 describe("LooselyEqualTo", () => {
   it("matches if two objects are loosely equal", () => {
     const value: string = "";
 
-    const matcher = looselyEqualTo<string, number>(value);
+    const result = looselyEqualTo<string, number>(value).match(0);
 
-    assertThat(matcher.match(0), matcherMatches());
+    assertThat(result, equalTo({ matches: true }));
   });
 
   it("fails if two objects are not loosely equal", () => {
     const matcher = looselyEqualTo(Number.NaN);
 
-    const result = matcher.match(Number.NaN);
-
-    assertThat(result, matcherDoesNotMatch());
-    assertEqual(result, {
-      matches: false,
+    assertThat(matcher.match(Number.NaN), equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected(Number.NaN.toString())
         .setActual(Number.NaN.toString())
@@ -26,6 +22,6 @@ describe("LooselyEqualTo", () => {
         expected: Number.NaN,
         actual: Number.NaN,
       },
-    });
+    }));
   });
 });

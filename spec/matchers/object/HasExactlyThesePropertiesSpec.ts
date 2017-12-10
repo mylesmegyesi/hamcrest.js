@@ -1,5 +1,4 @@
-import { assertThat, DescriptionBuilder, hasExactlyTheseProperties, matcherDoesNotMatch, matcherMatches } from "../../../src";
-import { assertEqual } from "../../BootstrapAssertions";
+import { assertThat, DescriptionBuilder, equalTo, hasExactlyTheseProperties } from "../../../src";
 
 describe("HasExactlyTheseProperties", () => {
   it("matches if the object only has the given properties", () => {
@@ -9,8 +8,9 @@ describe("HasExactlyTheseProperties", () => {
     };
 
     const hasOnlyThesePropertiesMatcher = hasExactlyTheseProperties<typeof actual, "a" | "b">("a", "b");
+    const result = hasOnlyThesePropertiesMatcher.match(actual);
 
-    assertThat(hasOnlyThesePropertiesMatcher.match(actual), matcherMatches());
+    assertThat(result, equalTo({ matches: true }));
   });
 
   it("fails with multiple extra and missing and overlap properties", () => {
@@ -21,14 +21,11 @@ describe("HasExactlyTheseProperties", () => {
       d: 4,
     };
 
-    const hasOnlyThesePropertiesMatcher = hasExactlyTheseProperties<{[key: string]: any}, string>("c", "d", "e", "f");
-
+    const hasOnlyThesePropertiesMatcher = hasExactlyTheseProperties<{ [key: string]: any }, string>("c", "d", "e", "f");
     const result = hasOnlyThesePropertiesMatcher.match(actual);
 
-    assertThat(result, matcherDoesNotMatch());
-
-    assertEqual(result, {
-      matches: false,
+    assertThat(result, equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected(`an object with only these properties: [ "c", "d", "e", "f" ]`)
         .setActual(JSON.stringify(actual, null, 2))
@@ -40,7 +37,7 @@ describe("HasExactlyTheseProperties", () => {
         expected: ["c", "d", "e", "f"],
         actual: ["a", "b", "c", "d"],
       },
-    });
+    }));
   });
 
   it("ignores duplicate expected keys", () => {
@@ -48,14 +45,11 @@ describe("HasExactlyTheseProperties", () => {
       a: 1,
     };
 
-    const hasOnlyThesePropertiesMatcher = hasExactlyTheseProperties<{[key: string]: any}, string>("a", "b", "a");
-
+    const hasOnlyThesePropertiesMatcher = hasExactlyTheseProperties<{ [key: string]: any }, string>("a", "b", "a");
     const result = hasOnlyThesePropertiesMatcher.match(actual);
 
-    assertThat(result, matcherDoesNotMatch());
-
-    assertEqual(result, {
-      matches: false,
+    assertThat(result, equalTo({
+      matches: false as false,
       description: new DescriptionBuilder()
         .setExpected(`an object with only these properties: [ "a", "b" ]`)
         .setActual(JSON.stringify(actual, null, 2))
@@ -67,6 +61,6 @@ describe("HasExactlyTheseProperties", () => {
         expected: ["a", "b"],
         actual: ["a"],
       },
-    });
+    }));
   });
 });
