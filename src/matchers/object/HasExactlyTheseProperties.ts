@@ -1,6 +1,7 @@
 import { DescriptionBuilder } from "../../DescriptionBuilder";
 import { Matcher } from "../../Matcher";
 import { MatchResult } from "../../MatchResult";
+import { printValue } from "../../Printing";
 
 function quote(s: string): string {
   return `"${s}"`;
@@ -40,20 +41,24 @@ class HasExactlyTheseProperties<T, K extends keyof T> implements Matcher<T> {
       }
     }
 
-    if (missingKeys.length === 0 && extraKeys.length === 0) {
-      return { matches: true };
-    }
+    const descriptionBuilder = DescriptionBuilder()
+      .setExpected(this.describeExpected())
+      .setActual(printValue(actual));
 
-    const descriptionBuilder = new DescriptionBuilder()
-      .appendToExpected(this.describeExpected())
-      .appendToActual(JSON.stringify(actual, null, 2))
-      .addLine("overlap", formatKeyArray(overlapKeys))
-      .addLine("extra", formatKeyArray(extraKeys))
-      .addLine("missing", formatKeyArray(missingKeys));
+    if (missingKeys.length === 0 && extraKeys.length === 0) {
+      return {
+        matches: true,
+        description: descriptionBuilder.build(),
+      };
+    }
 
     return {
       matches: false,
-      description: descriptionBuilder.build(),
+      description: descriptionBuilder
+        .addLine("overlap", formatKeyArray(overlapKeys))
+        .addLine("extra", formatKeyArray(extraKeys))
+        .addLine("missing", formatKeyArray(missingKeys))
+        .build(),
       diff: {
         expected: this.expectedKeys,
         actual: actualKeys,

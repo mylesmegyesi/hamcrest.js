@@ -1,12 +1,18 @@
 import { assertThat, DescriptionBuilder, equalTo, isTrue } from "../../src";
 
-describe("isTrue", () => {
+describe("IsTrue", () => {
   it("matches when the actual is true", () => {
     const matcher = isTrue();
 
     const result = matcher.match(true);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("true")
+        .setActual("true")
+        .build(),
+    }));
   });
 
   it("fails when the actual is false", () => {
@@ -16,7 +22,7 @@ describe("isTrue", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected("true")
         .setActual("false")
         .build(),

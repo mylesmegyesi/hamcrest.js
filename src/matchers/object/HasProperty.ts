@@ -2,6 +2,7 @@ import { DescriptionBuilder } from "../../DescriptionBuilder";
 import { Matcher } from "../../Matcher";
 import { MatchResult } from "../../MatchResult";
 
+import { printValue } from "../../Printing";
 import { anything } from "../Anything";
 
 class HasProperty<T, K extends keyof T> implements Matcher<T> {
@@ -15,9 +16,9 @@ class HasProperty<T, K extends keyof T> implements Matcher<T> {
       } else {
         return {
           matches: false,
-          description: new DescriptionBuilder(valueMatchResult.description)
-            .resetExpectedLabelToDefault()
-            .prependToExpected(`an object with property "${this.property}" matching `)
+          description: DescriptionBuilder()
+            .setExpected(`an object with property "${this.property}" matching ${valueMatchResult.description.expected}`)
+            .setActual(printValue(actual))
             .build(),
           diff: valueMatchResult.diff,
         };
@@ -25,9 +26,9 @@ class HasProperty<T, K extends keyof T> implements Matcher<T> {
     } else {
       return {
         matches: false,
-        description: new DescriptionBuilder()
-          .appendToExpected(`an object with property "${this.property}"`)
-          .appendToActual(JSON.stringify(actual, null, 2))
+        description: DescriptionBuilder()
+          .setExpected(`an object with property "${this.property}"`)
+          .setActual(printValue(actual))
           .build(),
       };
     }

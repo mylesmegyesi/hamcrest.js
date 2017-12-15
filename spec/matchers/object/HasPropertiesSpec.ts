@@ -1,5 +1,5 @@
-import { anything, assertThat, DescriptionBuilder, equalTo, FailedMatchResult, hasProperties, is } from "../../../src";
-import { mockMatcherThatFails, mockMatcherThatMatches } from "../../MockMatcher";
+import { anything, assertThat, DescriptionBuilder, equalTo, hasProperties, is, printValue } from "../../../src";
+import { mockMatcher } from "../../MockMatcher";
 
 describe("HasProperties", () => {
   type O = {
@@ -17,7 +17,13 @@ describe("HasProperties", () => {
     });
     const result = hasPropertiesMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("(anything and anything)")
+        .setActual(printValue(actual))
+        .build(),
+    }));
   });
 
   it("matches only given property matchers for some of the required properties of the object", () => {
@@ -28,7 +34,13 @@ describe("HasProperties", () => {
     });
     const result = hasPropertiesMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("anything")
+        .setActual("1")
+        .build(),
+    }));
   });
 
   it("fails when a property is missing", () => {
@@ -43,9 +55,9 @@ describe("HasProperties", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(`an object with property "c"`)
-        .setActual(JSON.stringify(actual, null, 2))
+        .setActual(printValue(actual))
         .build(),
     }));
   });
@@ -53,8 +65,20 @@ describe("HasProperties", () => {
   it("matches when all the property matchers match", () => {
     const actual: O = { a: 1, b: 2 };
 
-    const aMatcher = mockMatcherThatMatches();
-    const bMatcher = mockMatcherThatMatches();
+    const aMatcher = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("a1")
+        .setActual("b1")
+        .build(),
+    });
+    const bMatcher = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("a2")
+        .setActual("b2")
+        .build(),
+    });
 
     const hasPropertiesMatcher = hasProperties<O>({
       a: aMatcher,
@@ -62,7 +86,13 @@ describe("HasProperties", () => {
     });
     const result = hasPropertiesMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("(a1 and a2)")
+        .setActual(printValue(actual))
+        .build(),
+    }));
     assertThat(aMatcher.matchCalledCount, is(1));
     assertThat(aMatcher.actual, is(1));
     assertThat(bMatcher.matchCalledCount, is(1));
@@ -71,20 +101,24 @@ describe("HasProperties", () => {
 
   it("fails when one property matcher fails", () => {
     const actual: O = { a: 1, b: 2 };
-    const expectedFailureResult: FailedMatchResult = {
+    const aMatcher = mockMatcher({
       matches: false,
-      description: new DescriptionBuilder()
-        .setExpected("a")
-        .setActual("b")
+      description: DescriptionBuilder()
+        .setExpected("a1")
+        .setActual("b1")
         .build(),
       diff: {
         expected: 1,
         actual: 2,
       },
-    };
-
-    const aMatcher = mockMatcherThatFails(expectedFailureResult);
-    const bMatcher = mockMatcherThatMatches();
+    });
+    const bMatcher = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("a2")
+        .setActual("b2")
+        .build(),
+    });
 
     const hasPropertiesMatcher = hasProperties<O>({
       a: aMatcher,
@@ -94,9 +128,9 @@ describe("HasProperties", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
-        .setExpected(`an object with property "a" matching a`)
-        .setActual("b")
+      description: DescriptionBuilder()
+        .setExpected(`an object with property "a" matching a1`)
+        .setActual(printValue(actual))
         .build(),
       diff: {
         expected: 1,

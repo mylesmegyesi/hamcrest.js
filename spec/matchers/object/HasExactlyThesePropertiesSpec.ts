@@ -1,4 +1,4 @@
-import { assertThat, DescriptionBuilder, equalTo, hasExactlyTheseProperties } from "../../../src";
+import { assertThat, DescriptionBuilder, equalTo, hasExactlyTheseProperties, printValue } from "../../../src";
 
 describe("HasExactlyTheseProperties", () => {
   it("matches if the object only has the given properties", () => {
@@ -10,7 +10,13 @@ describe("HasExactlyTheseProperties", () => {
     const hasOnlyThesePropertiesMatcher = hasExactlyTheseProperties<typeof actual, "a" | "b">("a", "b");
     const result = hasOnlyThesePropertiesMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected(`an object with only these properties: [ "a", "b" ]`)
+        .setActual(printValue(actual))
+        .build(),
+    }));
   });
 
   it("fails with multiple extra and missing and overlap properties", () => {
@@ -26,9 +32,9 @@ describe("HasExactlyTheseProperties", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(`an object with only these properties: [ "c", "d", "e", "f" ]`)
-        .setActual(JSON.stringify(actual, null, 2))
+        .setActual(printValue(actual))
         .addLine("overlap", `[ "c", "d" ]`)
         .addLine("extra", `[ "a", "b" ]`)
         .addLine("missing", `[ "e", "f" ]`)
@@ -50,9 +56,9 @@ describe("HasExactlyTheseProperties", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(`an object with only these properties: [ "a", "b" ]`)
-        .setActual(JSON.stringify(actual, null, 2))
+        .setActual(printValue(actual))
         .addLine("overlap", `[ "a" ]`)
         .addLine("extra", `[ ]`)
         .addLine("missing", `[ "b" ]`)

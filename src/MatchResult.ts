@@ -2,6 +2,7 @@ export type MatchResult = MatchedMatchResult | FailedMatchResult;
 
 export type MatchedMatchResult = Readonly<{
   matches: true;
+  description: Description;
 }>;
 
 export type FailedMatchResult = Readonly<{
@@ -11,9 +12,7 @@ export type FailedMatchResult = Readonly<{
 }>;
 
 export type Description = Readonly<{
-  expectedLabel: string;
   expected: string;
-  actualLabel: string;
   actual: string;
   extraLines: ReadonlyArray<DescriptionLine>;
 }>;

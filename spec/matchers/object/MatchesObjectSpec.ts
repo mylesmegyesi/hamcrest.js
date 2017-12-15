@@ -1,5 +1,8 @@
-import { anything, assertThat, DescriptionBuilder, equalTo, FailedMatchResult, is, matchesObject } from "../../../src";
-import { mockMatcherThatFails, mockMatcherThatMatches } from "../../MockMatcher";
+import {
+  anything, assertThat, DescriptionBuilder, equalTo, FailedMatchResult, is, matchesObject,
+  printValue,
+} from "../../../src";
+import { mockMatcher } from "../../MockMatcher";
 
 describe("MatchesObject", () => {
   type O = {
@@ -11,8 +14,20 @@ describe("MatchesObject", () => {
   it("matches when all the property matchers match", () => {
     const actual: O = { a: 1, b: 2 };
 
-    const aMatcher = mockMatcherThatMatches();
-    const bMatcher = mockMatcherThatMatches();
+    const aMatcher = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("something")
+        .setActual("something else")
+        .build(),
+    });
+    const bMatcher = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("something")
+        .setActual("something else")
+        .build(),
+    });
 
     const matchesObjectMatcher = matchesObject<O, keyof O>({
       a: aMatcher,
@@ -20,7 +35,13 @@ describe("MatchesObject", () => {
     });
     const result = matchesObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected(`(an object with only these properties: [ "a", "b" ] and (something and something))`)
+        .setActual(printValue(actual))
+        .build(),
+    }));
     assertThat(aMatcher.matchCalledCount, is(1));
     assertThat(aMatcher.actual, is(1));
     assertThat(bMatcher.matchCalledCount, is(1));
@@ -31,7 +52,7 @@ describe("MatchesObject", () => {
     const actual: O = { a: 1, b: 2 };
     const expectedFailureResult: FailedMatchResult = {
       matches: false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected("a")
         .setActual("b")
         .build(),
@@ -41,8 +62,14 @@ describe("MatchesObject", () => {
       },
     };
 
-    const aMatcher = mockMatcherThatFails(expectedFailureResult);
-    const bMatcher = mockMatcherThatMatches();
+    const aMatcher = mockMatcher(expectedFailureResult);
+    const bMatcher = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("something")
+        .setActual("something else")
+        .build(),
+    });
 
     const matchesObjectMatcher = matchesObject<O, keyof O>({
       a: aMatcher,
@@ -52,9 +79,9 @@ describe("MatchesObject", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(`an object with property "a" matching a`)
-        .setActual("b")
+        .setActual(printValue(actual))
         .build(),
       diff: {
         expected: 1,
@@ -82,9 +109,9 @@ describe("MatchesObject", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(`an object with only these properties: [ "a", "b" ]`)
-        .setActual(JSON.stringify(actual, null, 2))
+        .setActual(printValue(actual))
         .addLine("overlap", `[ "a", "b" ]`)
         .addLine("extra", `[ "c" ]`)
         .addLine("missing", `[ ]`)
@@ -119,9 +146,9 @@ describe("MatchesObject", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(`an object with only these properties: [ "a", "b", "c" ]`)
-        .setActual(JSON.stringify(actual, null, 2))
+        .setActual(printValue(actual))
         .addLine("overlap", `[ "a", "b" ]`)
         .addLine("extra", `[ ]`)
         .addLine("missing", `[ "c" ]`)

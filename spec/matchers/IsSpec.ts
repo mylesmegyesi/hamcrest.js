@@ -6,7 +6,13 @@ describe("Is", () => {
 
     const result = matcher.match(1);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("1")
+        .setActual("1")
+        .build(),
+    }));
   });
 
   it("fails if Object.is returns false", () => {
@@ -16,7 +22,7 @@ describe("Is", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected("0")
         .setActual("-0")
         .build(),

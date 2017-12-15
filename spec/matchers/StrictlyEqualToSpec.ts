@@ -6,7 +6,13 @@ describe("StrictlyEqualTo", () => {
 
     const result = strictlyEqualTo(value).match(value);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("{ a: 1 }")
+        .setActual("{ a: 1 }")
+        .build(),
+    }));
   });
 
   it("fails if two objects are not strictly equal", () => {
@@ -17,7 +23,7 @@ describe("StrictlyEqualTo", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected("{ a: 1 }")
         .setActual("{ a: 1 }")
         .build(),

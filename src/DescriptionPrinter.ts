@@ -21,14 +21,17 @@ function buildLines(lines: DescriptionLine[]): string {
   }).join(EOL) + EOL;
 }
 
+const ACTUAL: string = "got";
+const EXPECTED: string = "Expected";
+
 export function descriptionToString(description: Description): string {
   return buildLines([
     {
-      label: description.expectedLabel,
+      label: EXPECTED,
       value: description.expected,
     },
     {
-      label: description.actualLabel,
+      label: ACTUAL,
       value: description.actual,
     },
     ...description.extraLines,
