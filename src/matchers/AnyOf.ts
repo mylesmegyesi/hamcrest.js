@@ -1,38 +1,47 @@
 import { DescriptionBuilder } from "../DescriptionBuilder";
 import { Matcher } from "../Matcher";
-import { FailedMatchResult, MatchResult } from "../MatchResult";
+import { Description, FailedMatchResult, MatchResult } from "../MatchResult";
+import { printValue } from "../Printing";
 
 class AnyOf<T> implements Matcher<T> {
   public constructor(private matchers: Matcher<T>[]) {}
 
   public match(actual: T): MatchResult {
+    const descriptions: Description[] = [];
     const failureResults: FailedMatchResult[] = [];
+    let matches = false;
 
     for (const matcher of this.matchers) {
       const result = matcher.match(actual);
+      descriptions.push(result.description);
       if (result.matches) {
-        return { matches: true };
+        matches = true;
       } else {
         failureResults.push(result);
       }
     }
 
-    const firstFailureResult: FailedMatchResult | undefined = failureResults[0];
+    const description = descriptions.length === 1
+      ? descriptions[0]
+      : DescriptionBuilder()
+        .setExpected(`(${descriptions.map(d => d.expected).join(" or ")})`)
+        .setActual(printValue(actual))
+        .build();
 
-    if (!firstFailureResult) {
-      return { matches: true };
+    if (matches) {
+      return {
+        matches: true,
+        description,
+      };
     }
 
     if (failureResults.length === 1) {
-      return firstFailureResult;
+      return failureResults[0];
     }
 
     return {
       matches: false,
-      description: new DescriptionBuilder()
-        .appendToExpected(failureResults.map(f => f.description.expected).join(" or "))
-        .appendToActual(firstFailureResult.description.actual)
-        .build(),
+      description,
     };
   }
 }

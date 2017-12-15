@@ -6,7 +6,13 @@ describe("LooselyEqualTo", () => {
 
     const result = looselyEqualTo<string, number>(value).match(0);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected(`""`)
+        .setActual("0")
+        .build(),
+    }));
   });
 
   it("fails if two objects are not loosely equal", () => {
@@ -14,7 +20,7 @@ describe("LooselyEqualTo", () => {
 
     assertThat(matcher.match(Number.NaN), equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(Number.NaN.toString())
         .setActual(Number.NaN.toString())
         .build(),

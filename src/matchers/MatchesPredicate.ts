@@ -10,16 +10,19 @@ class MatchesPredicate<E, A> implements Matcher<A> {
                      private predicate: MatcherPredicate<E, A>) {}
 
   public match(actual: A): MatchResult {
+    const description = DescriptionBuilder()
+      .setExpected(printValue(this.expected))
+      .setActual(printValue(actual))
+      .build();
     if (this.predicate(this.expected, actual)) {
-      return { matches: true };
+      return {
+        matches: true,
+        description,
+      };
     } else {
       return {
         matches: false,
-        description: new DescriptionBuilder()
-          .appendToExpected(printValue(this.expected))
-          .setActualLabel("got")
-          .appendToActual(printValue(actual))
-          .build(),
+        description,
         diff: {
           expected: this.expected,
           actual,

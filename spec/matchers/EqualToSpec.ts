@@ -1,4 +1,4 @@
-import { assertThat, equalTo, hasProperties, isFalse, isTrue, strictlyEqualTo } from "../../src";
+import { assertThat, equalTo, hasProperties, is, isFalse, isTrue, matchesObject } from "../../src";
 
 describe("EqualTo", () => {
   it("matches if two objects have the same value", () => {
@@ -7,8 +7,12 @@ describe("EqualTo", () => {
 
     const matcher = equalTo(actual);
 
-    assertThat(matcher.match(expected), hasProperties({
+    assertThat(matcher.match(expected), matchesObject({
       matches: isTrue(),
+      description: hasProperties({
+        expected: is("{ a: 1 }"),
+        actual: is("{ a: 1 }"),
+      }),
     }));
   });
 
@@ -21,12 +25,12 @@ describe("EqualTo", () => {
     assertThat(result, hasProperties({
       matches: isFalse(),
       description: hasProperties({
-        expected: strictlyEqualTo("{ a: 2 }"),
-        actual: strictlyEqualTo("{ a: 1 }"),
+        expected: is("{ a: 2 }"),
+        actual: is("{ a: 1 }"),
       }),
       diff: hasProperties({
-        expected: strictlyEqualTo(expected),
-        actual: strictlyEqualTo(actual),
+        expected: is(expected),
+        actual: is(actual),
       }),
     }));
   });

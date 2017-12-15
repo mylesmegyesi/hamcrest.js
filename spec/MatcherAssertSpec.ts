@@ -3,11 +3,17 @@ import { EOL } from "os";
 
 import { AssertionError, assertThat, DescriptionBuilder } from "../src";
 
-import { mockMatcherThatFails, mockMatcherThatMatches } from "./MockMatcher";
+import { mockMatcher } from "./MockMatcher";
 
 describe("MatcherAssert", () => {
   it("assertThat does nothing when the matcher matches", () => {
-    const matcher = mockMatcherThatMatches();
+    const matcher = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("something")
+        .setActual("something else")
+        .build(),
+    });
 
     assertThat(1, matcher);
 
@@ -16,9 +22,9 @@ describe("MatcherAssert", () => {
   });
 
   it("assertThat throws when the match fails", () => {
-    const matcher = mockMatcherThatFails({
+    const matcher = mockMatcher({
       matches: false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected("something")
         .setActual("something else")
         .build(),
@@ -57,9 +63,9 @@ describe("MatcherAssert", () => {
   }
 
   it("assertThat sets showDiff when return in the result", () => {
-    const matcher = mockMatcherThatFails({
+    const matcher = mockMatcher({
       matches: false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected("something")
         .setActual("something else")
         .build(),

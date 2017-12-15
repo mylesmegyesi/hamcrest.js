@@ -1,5 +1,5 @@
-import { assertThat, DescriptionBuilder, equalTo, FailedMatchResult, hasProperty, is } from "../../../src";
-import { MockMatcher, mockMatcherThatFails, mockMatcherThatMatches } from "../../MockMatcher";
+import { assertThat, DescriptionBuilder, equalTo, FailedMatchResult, hasProperty, is, printValue } from "../../../src";
+import { MockMatcher, mockMatcher } from "../../MockMatcher";
 
 describe("HasProperty", () => {
   type O = {
@@ -16,7 +16,13 @@ describe("HasProperty", () => {
     const hasPropertyMatcher = hasProperty<O, "b">("b");
     const result = hasPropertyMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("anything")
+        .setActual("2")
+        .build(),
+    }));
   });
 
   it("matches without knowing the keys", () => {
@@ -28,7 +34,13 @@ describe("HasProperty", () => {
     const hasPropertyMatcher = hasProperty<{ [key: string]: any }, string>("b");
     const result = hasPropertyMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("anything")
+        .setActual("2")
+        .build(),
+    }));
   });
 
   it("matches if the object has the property but the value is undefined", () => {
@@ -40,7 +52,13 @@ describe("HasProperty", () => {
     const hasPropertyMatcher = hasProperty<O, "b">("b");
     const result = hasPropertyMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("anything")
+        .setActual("undefined")
+        .build(),
+    }));
   });
 
   it("matches if the keys is present and the value matcher matches", () => {
@@ -48,12 +66,21 @@ describe("HasProperty", () => {
       a: 1,
       b: 2,
     };
-    const valueMatcher: MockMatcher<number | undefined> = mockMatcherThatMatches();
+    const valueMatcher: MockMatcher<number | undefined> = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("something")
+        .setActual("something else")
+        .build(),
+    });
 
     const hasPropertyMatcher = hasProperty<O, "b">("b", valueMatcher);
     const result = hasPropertyMatcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: valueMatcher.result.description,
+    }));
     assertThat(valueMatcher.matchCalledCount, is(1));
     assertThat(valueMatcher.actual, is(2));
   });
@@ -66,9 +93,9 @@ describe("HasProperty", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(`an object with property "b"`)
-        .setActual(JSON.stringify(actual, null, 2))
+        .setActual(printValue(actual))
         .build(),
     }));
   });
@@ -76,7 +103,7 @@ describe("HasProperty", () => {
   it("fails if the keys is present and the value matcher fails", () => {
     const valueMatchFailure: FailedMatchResult = {
       matches: false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected("expected")
         .setActual("actual")
         .build(),
@@ -85,7 +112,7 @@ describe("HasProperty", () => {
         actual: 2,
       },
     };
-    const valueMatcher: MockMatcher<number | undefined> = mockMatcherThatFails(valueMatchFailure);
+    const valueMatcher: MockMatcher<number | undefined> = mockMatcher(valueMatchFailure);
     const actual: O = {
       a: 1,
       b: 2,
@@ -96,9 +123,9 @@ describe("HasProperty", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected(`an object with property "b" matching expected`)
-        .setActual("actual")
+        .setActual(printValue(actual))
         .build(),
       diff: {
         expected: 1,

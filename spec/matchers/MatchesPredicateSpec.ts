@@ -11,7 +11,13 @@ describe("MatchesPredicate", () => {
 
     const result = matcher.match(actual);
 
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected("\"something\"")
+        .setActual("\"something else\"")
+        .build(),
+    }));
     assertThat(test.calledOnce, isTrue());
     assertThat(test.calledWithExactly(expected, actual), isTrue());
   });
@@ -25,7 +31,7 @@ describe("MatchesPredicate", () => {
 
     assertThat(result, equalTo({
       matches: false as false,
-      description: new DescriptionBuilder()
+      description: DescriptionBuilder()
         .setExpected("\"something\"")
         .setActual("\"something\"")
         .build(),
