@@ -17,6 +17,7 @@ export { is } from "./matchers/Is";
 export { isFalse } from "./matchers/IsFalse";
 export { isNull } from "./matchers/IsNull";
 export { isTrue } from "./matchers/IsTrue";
+export { isUndefined } from "./matchers/IsUndefined";
 export { looselyEqualTo } from "./matchers/LooselyEqualTo";
 export { matchesObject } from "./matchers/object/MatchesObject";
 export { not } from "./matchers/Not";
