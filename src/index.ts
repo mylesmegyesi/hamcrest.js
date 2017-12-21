@@ -15,6 +15,7 @@ export { hasProperties } from "./matchers/object/HasProperties";
 export { hasExactlyTheseProperties } from "./matchers/object/HasExactlyTheseProperties";
 export { is } from "./matchers/Is";
 export { isFalse } from "./matchers/IsFalse";
+export { isNull } from "./matchers/IsNull";
 export { isTrue } from "./matchers/IsTrue";
 export { looselyEqualTo } from "./matchers/LooselyEqualTo";
 export { matchesObject } from "./matchers/object/MatchesObject";
