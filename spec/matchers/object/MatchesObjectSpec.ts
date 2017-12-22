@@ -1,7 +1,6 @@
-import {
-  anything, assertThat, DescriptionBuilder, equalTo, FailedMatchResult, is, matchesObject,
-  printValue,
-} from "../../../src";
+import { EOL } from "os";
+
+import { anything, assertThat, DescriptionBuilder, equalTo, is, isPresent, matchesObject } from "../../../src";
 import { mockMatcher } from "../../MockMatcher";
 
 describe("MatchesObject", () => {
@@ -17,19 +16,19 @@ describe("MatchesObject", () => {
     const aMatcher = mockMatcher({
       matches: true,
       description: DescriptionBuilder()
-        .setExpected("something")
-        .setActual("something else")
+        .setExpected("a value for a")
+        .setActual("not that")
         .build(),
     });
     const bMatcher = mockMatcher({
       matches: true,
       description: DescriptionBuilder()
-        .setExpected("something")
+        .setExpected("a value for b")
         .setActual("something else")
         .build(),
     });
 
-    const matchesObjectMatcher = matchesObject<O, keyof O>({
+    const matchesObjectMatcher = matchesObject<O>({
       a: aMatcher,
       b: bMatcher,
     });
@@ -38,8 +37,18 @@ describe("MatchesObject", () => {
     assertThat(result, equalTo({
       matches: true,
       description: DescriptionBuilder()
-        .setExpected(`(an object with only these properties: [ "a", "b" ] and (something and something))`)
-        .setActual(printValue(actual))
+        .setExpected(
+          `{${EOL}` +
+          `  a: a value for a,${EOL}` +
+          `  b: a value for b${EOL}` +
+          `}`,
+        )
+        .setActual(
+          `{${EOL}` +
+          `  a: 1,${EOL}` +
+          `  b: 2${EOL}` +
+          `}`,
+        )
         .build(),
     }));
     assertThat(aMatcher.matchCalledCount, is(1));
@@ -50,47 +59,36 @@ describe("MatchesObject", () => {
 
   it("fails when one property matcher fails", () => {
     const actual: O = { a: 1, b: 2 };
-    const expectedFailureResult: FailedMatchResult = {
-      matches: false,
-      description: DescriptionBuilder()
-        .setExpected("a")
-        .setActual("b")
-        .build(),
-      diff: {
-        expected: 1,
-        actual: 2,
-      },
-    };
-
-    const aMatcher = mockMatcher(expectedFailureResult);
-    const bMatcher = mockMatcher({
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected("something")
-        .setActual("something else")
-        .build(),
-    });
-
-    const matchesObjectMatcher = matchesObject<O, keyof O>({
-      a: aMatcher,
-      b: bMatcher,
+    const matchesObjectMatcher = matchesObject<O>({
+      a: equalTo(1),
+      b: mockMatcher({
+        matches: false,
+        description: DescriptionBuilder()
+          .setExpected("3")
+          .setActual("2")
+          .build(),
+      }),
     });
     const result = matchesObjectMatcher.match(actual);
 
     assertThat(result, equalTo({
       matches: false as false,
       description: DescriptionBuilder()
-        .setExpected(`an object with property "a" matching a`)
-        .setActual(printValue(actual))
+        .setExpected(
+          `{${EOL}` +
+          `  a: 1,${EOL}` +
+          `  b: 3${EOL}` +
+          `}`,
+        )
+        .setActual(
+          `{${EOL}` +
+          `  a: 1,${EOL}` +
+          `  b: 2${EOL}` +
+          `}`,
+        )
+        .addLine("failures", `{ b: 2 }`)
         .build(),
-      diff: {
-        expected: 1,
-        actual: 2,
-      },
     }));
-    assertThat(aMatcher.matchCalledCount, is(1));
-    assertThat(aMatcher.actual, is(1));
-    assertThat(bMatcher.matchCalledCount, is(0));
   });
 
   it("fails if there are any extra keys", () => {
@@ -100,7 +98,7 @@ describe("MatchesObject", () => {
       c: 3,
     };
 
-    const matchesObjectMatcher = matchesObject<O, keyof O>({
+    const matchesObjectMatcher = matchesObject<O>({
       a: anything(),
       b: anything(),
     });
@@ -110,23 +108,21 @@ describe("MatchesObject", () => {
     assertThat(result, equalTo({
       matches: false as false,
       description: DescriptionBuilder()
-        .setExpected(`an object with only these properties: [ "a", "b" ]`)
-        .setActual(printValue(actual))
-        .addLine("overlap", `[ "a", "b" ]`)
-        .addLine("extra", `[ "c" ]`)
-        .addLine("missing", `[ ]`)
+        .setExpected(
+          `{${EOL}` +
+          `  a: anything,${EOL}` +
+          `  b: anything${EOL}` +
+          `}`,
+        )
+        .setActual(
+          `{${EOL}` +
+          `  a: 1,${EOL}` +
+          `  b: 2,${EOL}` +
+          `  c: 3${EOL}` +
+          `}`,
+        )
+        .addLine("extra", `{ c: 3 }`)
         .build(),
-      diff: {
-        expected: [
-          "a",
-          "b",
-        ],
-        actual: [
-          "a",
-          "b",
-          "c",
-        ],
-      },
     }));
   });
 
@@ -136,10 +132,10 @@ describe("MatchesObject", () => {
       b: 2,
     };
 
-    const matchesObjectMatcher = matchesObject<O, keyof O>({
+    const matchesObjectMatcher = matchesObject<O>({
       a: anything(),
       b: anything(),
-      c: anything(),
+      c: isPresent(),
     });
 
     const result = matchesObjectMatcher.match(actual);
@@ -147,23 +143,21 @@ describe("MatchesObject", () => {
     assertThat(result, equalTo({
       matches: false as false,
       description: DescriptionBuilder()
-        .setExpected(`an object with only these properties: [ "a", "b", "c" ]`)
-        .setActual(printValue(actual))
-        .addLine("overlap", `[ "a", "b" ]`)
-        .addLine("extra", `[ ]`)
-        .addLine("missing", `[ "c" ]`)
+        .setExpected(
+          `{${EOL}` +
+          `  a: anything,${EOL}` +
+          `  b: anything,${EOL}` +
+          `  c: not (null or undefined)${EOL}` +
+          `}`,
+        )
+        .setActual(
+          `{${EOL}` +
+          `  a: 1,${EOL}` +
+          `  b: 2${EOL}` +
+          `}`,
+        )
+        .addLine("missing", `{ c: not (null or undefined) }`)
         .build(),
-      diff: {
-        expected: [
-          "a",
-          "b",
-          "c",
-        ],
-        actual: [
-          "a",
-          "b",
-        ],
-      },
     }));
   });
 });
