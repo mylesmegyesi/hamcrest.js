@@ -109,18 +109,13 @@ export function printObject<T>(obj: T, printers: ObjectPrinters<T>): string {
   }
 }
 
-function buildObjectPrinters<T>(printer: Print<any>, obj: T): ObjectPrinters<T> {
-  const printers: Partial<ObjectPrinters<T>> = {};
-
-  for (const key in obj) {
-    if (!obj.hasOwnProperty(key)) {
-      continue;
-    }
-
-    printers[key] = printer;
-  }
-
-  return printers as ObjectPrinters<T>;
+function buildObjectPrinters<T>(printer: Print<any>): ObjectPrinters<T> {
+  const printObjectProxy = new Proxy({}, {
+    get: () => {
+      return printer;
+    },
+  });
+  return printObjectProxy as ObjectPrinters<T>;
 }
 
 export const printBoolean: Print<boolean> = toString;
@@ -191,7 +186,7 @@ export function printValue(value: any): string {
   }
 
   if (isPlainObject(value)) {
-    return printObject(value, buildObjectPrinters(printValue, value));
+    return printObject(value, buildObjectPrinters(printValue));
   }
 
   return toString(value);
