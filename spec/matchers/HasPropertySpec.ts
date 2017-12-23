@@ -1,5 +1,5 @@
-import { assertThat, DescriptionBuilder, equalTo, FailedMatchResult, hasProperty, is, printValue } from "../../../src";
-import { MockMatcher, mockMatcher } from "../../MockMatcher";
+import { assertThat, DescriptionBuilder, equalTo, FailedMatchResult, hasProperty, is, printValue } from "../../src/index";
+import { MockMatcher, mockMatcher } from "../MockMatcher";
 
 describe("HasProperty", () => {
   type O = {

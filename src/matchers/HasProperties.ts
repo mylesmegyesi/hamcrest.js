@@ -1,10 +1,10 @@
-import { Matcher } from "../../Matcher";
-import { allOf } from "../AllOf";
+import { Matcher } from "../Matcher";
 
+import { allOf } from "./AllOf";
 import { hasProperty } from "./HasProperty";
-import { MatcherObject } from "./MatcherObject";
+import { ObjectMatchers } from "./ObjectMatchers";
 
-export function hasProperties<T>(expected: Partial<MatcherObject<T>>): Matcher<T> {
+export function hasProperties<T>(expected: Partial<ObjectMatchers<T>>): Matcher<T> {
   const matchers: Matcher<T>[] = [];
 
   for (const key in expected) {

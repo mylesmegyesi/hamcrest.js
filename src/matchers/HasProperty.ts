@@ -1,9 +1,9 @@
-import { DescriptionBuilder } from "../../DescriptionBuilder";
-import { Matcher } from "../../Matcher";
-import { MatchResult } from "../../MatchResult";
+import { DescriptionBuilder } from "../DescriptionBuilder";
+import { Matcher } from "../Matcher";
+import { MatchResult } from "../MatchResult";
+import { printValue } from "../Printing";
 
-import { printValue } from "../../Printing";
-import { anything } from "../Anything";
+import { anything } from "./Anything";
 
 class HasProperty<T, K extends keyof T> implements Matcher<T> {
   public constructor(private property: keyof T, private valueMatcher: Matcher<T[K]>) {}
