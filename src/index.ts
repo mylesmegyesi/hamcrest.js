@@ -12,7 +12,6 @@ export { equalTo } from "./matchers/EqualTo";
 export { matches, MatcherPredicate } from "./matchers/MatchesPredicate";
 export { hasProperty } from "./matchers/object/HasProperty";
 export { hasProperties } from "./matchers/object/HasProperties";
-export { hasExactlyTheseProperties } from "./matchers/object/HasExactlyTheseProperties";
 export { is } from "./matchers/Is";
 export { isAbsent } from "./matchers/IsAbsent";
 export { isFalse } from "./matchers/IsFalse";
