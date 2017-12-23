@@ -42,7 +42,7 @@
     "no-internal-module": true,
     "no-magic-numbers": false,
     "no-namespace": [true, "allow-declarations"],
-    "no-non-null-assertion": true,
+    "no-non-null-assertion": false,
     "no-parameter-reassignment": true,
     "no-reference": true,
     "no-unnecessary-type-assertion": true,
