@@ -1,33 +1,18 @@
-import { DescriptionBuilder } from "../../DescriptionBuilder";
-import { Matcher } from "../../Matcher";
-import { MatchResult } from "../../MatchResult";
-import { ObjectPrinters, Print, printObject, printValue } from "../../Printing";
+import { DescriptionBuilder } from "../DescriptionBuilder";
+import { Matcher } from "../Matcher";
+import { MatchResult } from "../MatchResult";
+import { printObject, printValue } from "../Printing";
 
-import { MatcherObject } from "./MatcherObject";
-
-type DescriptionObject<T> = {
-  [P in keyof T]: string;
-};
-
-const printDescription: Print<string> = (description: string) => description;
-
-const printDescriptionsProxy = new Proxy({}, {
-  get: () => {
-    return printDescription;
-  },
-});
-
-function buildDescriptionObjectPrinter<T>(): ObjectPrinters<Partial<DescriptionObject<T>>> {
-  return printDescriptionsProxy as ObjectPrinters<Partial<DescriptionObject<T>>>;
-}
+import { buildObjectDescriptionsPrinter, ObjectDescriptions } from "./ObjectDescriptions";
+import { ObjectMatchers } from "./ObjectMatchers";
 
 class MatchesObject<T> implements Matcher<T> {
-  public constructor(private expected: MatcherObject<T>) {}
+  public constructor(private expected: ObjectMatchers<T>) {}
 
   public match(actual: T): MatchResult {
-    const expectedDescription: Partial<DescriptionObject<T>> = {};
-    const failures: Partial<DescriptionObject<T>> = {};
-    const missing: Partial<DescriptionObject<T>> = {};
+    const expectedDescription: Partial<ObjectDescriptions<T>> = {};
+    const failures: Partial<ObjectDescriptions<T>> = {};
+    const missing: Partial<ObjectDescriptions<T>> = {};
     const extra: T = Object.assign({}, actual);
 
     for (const key in this.expected) {
@@ -49,7 +34,7 @@ class MatchesObject<T> implements Matcher<T> {
       }
     }
 
-    const printDescriptions = buildDescriptionObjectPrinter<T>();
+    const printDescriptions = buildObjectDescriptionsPrinter<T>();
 
     const descriptionBuilder = DescriptionBuilder()
       .setExpected(printObject(expectedDescription, printDescriptions))
@@ -88,6 +73,6 @@ class MatchesObject<T> implements Matcher<T> {
   }
 }
 
-export function matchesObject<T>(expected: MatcherObject<T>): Matcher<T> {
+export function matchesObject<T>(expected: ObjectMatchers<T>): Matcher<T> {
   return new MatchesObject<T>(expected);
 }

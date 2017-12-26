@@ -1,7 +1,7 @@
 import { EOL } from "os";
 
-import { anything, assertThat, DescriptionBuilder, equalTo, is, isPresent, matchesObject } from "../../../src";
-import { mockMatcher } from "../../MockMatcher";
+import { anything, assertThat, DescriptionBuilder, equalTo, is, isPresent, matchesObject } from "../../src/index";
+import { mockMatcher } from "../MockMatcher";
 
 describe("MatchesObject", () => {
   type O = {
