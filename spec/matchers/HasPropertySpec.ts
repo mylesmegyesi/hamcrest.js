@@ -1,4 +1,6 @@
-import { assertThat, DescriptionBuilder, equalTo, FailedMatchResult, hasProperty, is, printValue } from "../../src/index";
+import { EOL } from "os";
+
+import { assertThat, DescriptionBuilder, equalTo, FailedMatchResult, hasProperty, is, printValue } from "../../src";
 import { MockMatcher, mockMatcher } from "../MockMatcher";
 
 describe("HasProperty", () => {
@@ -19,8 +21,8 @@ describe("HasProperty", () => {
     assertThat(result, equalTo({
       matches: true,
       description: DescriptionBuilder()
-        .setExpected("anything")
-        .setActual("2")
+        .setExpected(`an object with property "b" matching anything`)
+        .setActual(printValue(actual))
         .build(),
     }));
   });
@@ -37,8 +39,8 @@ describe("HasProperty", () => {
     assertThat(result, equalTo({
       matches: true,
       description: DescriptionBuilder()
-        .setExpected("anything")
-        .setActual("2")
+        .setExpected(`an object with property "b" matching anything`)
+        .setActual(printValue(actual))
         .build(),
     }));
   });
@@ -55,8 +57,8 @@ describe("HasProperty", () => {
     assertThat(result, equalTo({
       matches: true,
       description: DescriptionBuilder()
-        .setExpected("anything")
-        .setActual("undefined")
+        .setExpected(`an object with property "b" matching anything`)
+        .setActual(printValue(actual))
         .build(),
     }));
   });
@@ -79,10 +81,42 @@ describe("HasProperty", () => {
 
     assertThat(result, equalTo({
       matches: true,
-      description: valueMatcher.result.description,
+      description: DescriptionBuilder()
+        .setExpected(`an object with property "b" matching something`)
+        .setActual(printValue(actual))
+        .build(),
     }));
     assertThat(valueMatcher.matchCalledCount, is(1));
     assertThat(valueMatcher.actual, is(2));
+  });
+
+  it("wraps the expected description if the property matcher contains a newline", () => {
+    const actual: O = {
+      a: 1,
+      b: 2,
+    };
+    const valueMatcher: MockMatcher<number | undefined> = mockMatcher({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected(`some${EOL}thing`)
+        .setActual("something else")
+        .build(),
+    });
+
+    const hasPropertyMatcher = hasProperty<O, "b">("b", valueMatcher);
+    const result = hasPropertyMatcher.match(actual);
+
+    assertThat(result, equalTo({
+      matches: true,
+      description: DescriptionBuilder()
+        .setExpected(
+          `an object with property "b" matching:${EOL}` +
+          `  some${EOL}` +
+          `  thing`,
+        )
+        .setActual(printValue(actual))
+        .build(),
+    }));
   });
 
   it("fails if the object does not have the property", () => {
