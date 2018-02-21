@@ -21,7 +21,7 @@ describe("Not", () => {
 
     assertThat(matcher, matcherMatches().given("actual"));
 
-    assertThat(wrappedMatcher, matchCalled().with("actual").times(1));
+    assertThat(wrappedMatcher, matchCalled({ actual: "actual"}));
   });
 
   it("fails when the given matcher matches", () => {

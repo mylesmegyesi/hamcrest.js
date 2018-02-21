@@ -27,8 +27,8 @@ describe("MatchesObject", () => {
   it("matches when all the property matchers match", () => {
     const actual: O = { a: 1, b: 2 };
 
-    const aMatcher = MockMatcher.matches();
-    const bMatcher = MockMatcher.matches();
+    const aMatcher = MockMatcher.matches<number>();
+    const bMatcher = MockMatcher.matches<number>();
 
     const matchesObjectMatcher = matchesObject<O>({
       a: aMatcher,
@@ -41,14 +41,14 @@ describe("MatchesObject", () => {
       failures: {},
     }).given(actual));
 
-    assertThat(aMatcher, matchCalled().with(1).times(1));
-    assertThat(bMatcher, matchCalled().with(2).times(1));
+    assertThat(aMatcher, matchCalled({ actual: 1 }));
+    assertThat(bMatcher, matchCalled({ actual: 2 }));
   });
 
   it("fails when one property matcher fails", () => {
     const actual: O = { a: 1, b: 2 };
-    const aMatcher = MockMatcher.matches();
-    const bMatcher = MockMatcher.builder()
+    const aMatcher = MockMatcher.matches<number>();
+    const bMatcher = MockMatcher.builder<number>()
       .setMatches(false)
       .setActual("b actual")
       .build();
@@ -63,7 +63,7 @@ describe("MatchesObject", () => {
       failures: { b: "b actual" },
     }).given(actual));
 
-    assertThat(bMatcher, describeActualCalled().with(2).times(1));
+    assertThat(bMatcher, describeActualCalled({ actual: 2, data: undefined }));
   });
 
   it("fails if there are any extra keys", () => {
@@ -111,7 +111,7 @@ describe("MatchesObject", () => {
       failures: {},
     }).given(actual));
 
-    assertThat(cMatcher, describeExpectedCalled<number | undefined>().times(1));
+    assertThat(cMatcher, describeExpectedCalled<number | undefined>(1));
   });
 
   it("describes expected", () => {
@@ -136,8 +136,8 @@ describe("MatchesObject", () => {
       `}`,
     ));
 
-    assertThat(aMatcher, describeExpectedCalled().times(1));
-    assertThat(bMatcher, describeExpectedCalled().times(1));
+    assertThat(aMatcher, describeExpectedCalled(1));
+    assertThat(bMatcher, describeExpectedCalled(1));
   });
 
   it("describes the actual by printing the value", () => {

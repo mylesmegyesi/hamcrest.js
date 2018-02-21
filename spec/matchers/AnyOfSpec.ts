@@ -15,24 +15,24 @@ import {
 
 describe("AnyOf", () => {
   it("matches if one matchers is given and it matches", () => {
-    const matcher = MockMatcher.matches();
+    const matcher = MockMatcher.matches<string>();
     const anyOfMatcher = anyOf(matcher);
 
     assertThat(anyOfMatcher, matcherMatches().given("actual"));
 
-    assertThat(matcher, matchCalled().with("actual").times(1));
+    assertThat(matcher, matchCalled({ actual: "actual" }));
   });
 
   it("matches if any of the matchers match", () => {
-    const matcher1 = MockMatcher.fails();
-    const matcher2 = MockMatcher.matches();
-    const matcher3 = MockMatcher.fails();
+    const matcher1 = MockMatcher.fails<string>();
+    const matcher2 = MockMatcher.matches<string>();
+    const matcher3 = MockMatcher.fails<string>();
     const anyOfMatcher = anyOf(matcher1, matcher2, matcher3);
 
     assertThat(anyOfMatcher, matcherMatches().given("actual"));
 
-    assertThat(matcher1, matchCalled().with("actual").times(1));
-    assertThat(matcher2, matchCalled().with("actual").times(1));
+    assertThat(matcher1, matchCalled({ actual: "actual" }));
+    assertThat(matcher2, matchCalled({ actual: "actual" }));
     assertThat(matcher3, matchNotCalled());
   });
 
@@ -50,16 +50,16 @@ describe("AnyOf", () => {
   });
 
   it("fails if all the matchers fail", () => {
-    const matcher1 = MockMatcher.fails();
-    const matcher2 = MockMatcher.fails();
-    const matcher3 = MockMatcher.fails();
+    const matcher1 = MockMatcher.fails<string>();
+    const matcher2 = MockMatcher.fails<string>();
+    const matcher3 = MockMatcher.fails<string>();
     const anyOfMatcher = anyOf(matcher1, matcher2, matcher3);
 
     assertThat(anyOfMatcher, matcherFails().given("actual"));
 
-    assertThat(matcher1, matchCalled().with("actual").times(1));
-    assertThat(matcher2, matchCalled().with("actual").times(1));
-    assertThat(matcher3, matchCalled().with("actual").times(1));
+    assertThat(matcher1, matchCalled({ actual: "actual" }));
+    assertThat(matcher2, matchCalled({ actual: "actual" }));
+    assertThat(matcher3, matchCalled({ actual: "actual" }));
   });
 
   it("describes expected with one matcher", () => {
@@ -70,7 +70,7 @@ describe("AnyOf", () => {
 
     assertThat(anyOfMatcher, matcherDescribesExpectedAs("something1"));
 
-    assertThat(matcher, describeExpectedCalled().times(1));
+    assertThat(matcher, describeExpectedCalled(1));
   });
 
   it("describes expected with multiple matchers", () => {
@@ -87,9 +87,9 @@ describe("AnyOf", () => {
 
     assertThat(anyOfMatcher, matcherDescribesExpectedAs("(something1 or something2 or something3)"));
 
-    assertThat(matcher1, describeExpectedCalled().times(1));
-    assertThat(matcher2, describeExpectedCalled().times(1));
-    assertThat(matcher3, describeExpectedCalled().times(1));
+    assertThat(matcher1, describeExpectedCalled(1));
+    assertThat(matcher2, describeExpectedCalled(1));
+    assertThat(matcher3, describeExpectedCalled(1));
   });
 
   it("describes actual by printing the value", () => {
