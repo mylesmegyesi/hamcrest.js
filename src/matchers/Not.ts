@@ -1,4 +1,4 @@
-import { DescriptionBuilder } from "../DescriptionBuilder";
+import { DescriptionBuilder } from "../Description";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
 
@@ -7,22 +7,18 @@ class Not<T> implements Matcher<T> {
 
   public match(actual: T): MatchResult {
     const result = this.matcher.match(actual);
-    const description = DescriptionBuilder()
-      .setExpected(`not ${result.description.expected}`)
-      .setActual(result.description.actual)
-      .build();
-    if (result.matches) {
-      return {
-        matches: false,
-        description,
-      };
-    } else {
-      return {
-        matches: true,
-        description,
-      };
-    }
+    return { matches: !result.matches };
   }
+
+  public describeExpected(): string {
+    return `not ${this.matcher.describeExpected()}`;
+  }
+
+  public describeActual(actual: T): string {
+    return this.matcher.describeActual(actual);
+  }
+
+  public describeResult(data: any, builder: DescriptionBuilder): void {}
 }
 
 export function not<T>(matcher: Matcher<T>): Matcher<T> {

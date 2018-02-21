@@ -1,19 +1,16 @@
-import { DescriptionBuilder } from "../DescriptionBuilder";
+import { BaseMatcher } from "../BaseMatcher";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
-import { printValue } from "../Printing";
 
 const ANYTHING: string = "anything";
 
-export class Anything<T> implements Matcher<T> {
+export class Anything<T> extends BaseMatcher<T> {
   public match(actual: T): MatchResult {
-    return {
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected(ANYTHING)
-        .setActual(printValue(actual))
-        .build(),
-    };
+    return { matches: true };
+  }
+
+  public describeExpected(): string {
+    return ANYTHING;
   }
 }
 

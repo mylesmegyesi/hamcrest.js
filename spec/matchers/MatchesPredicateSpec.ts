@@ -1,6 +1,6 @@
 import * as sinon from "sinon";
 
-import { assertThat, DescriptionBuilder, equalTo, isTrue, matches } from "../../src";
+import { assertThat, equalTo, is, isTrue, matches } from "../../src";
 
 describe("MatchesPredicate", () => {
   it("matches if the given predicate returns true", () => {
@@ -13,10 +13,10 @@ describe("MatchesPredicate", () => {
 
     assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected("\"something\"")
-        .setActual("\"something else\"")
-        .build(),
+      diff: {
+        expected,
+        actual,
+      },
     }));
     assertThat(test.calledOnce, isTrue());
     assertThat(test.calledWithExactly(expected, actual), isTrue());
@@ -30,15 +30,23 @@ describe("MatchesPredicate", () => {
     const result = matcher.match(expected);
 
     assertThat(result, equalTo({
-      matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected("\"something\"")
-        .setActual("\"something\"")
-        .build(),
+      matches: false,
       diff: {
         expected,
         actual: expected,
       },
     }));
+  });
+
+  it("describes the expected by printing the value", () => {
+    const matcher = matches<string, string>("something", (e, a) => true);
+
+    assertThat(matcher.describeExpected(), is("\"something\""));
+  });
+
+  it("describes the actual by printing the value", () => {
+    const matcher = matches<string, string>("something", (e, a) => true);
+
+    assertThat(matcher.describeActual("something else"), is("\"something else\""));
   });
 });

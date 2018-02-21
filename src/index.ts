@@ -1,6 +1,6 @@
-export { DescriptionBuilder } from "./DescriptionBuilder";
+export { DescriptionBuilder } from "./Description";
 export { Matcher } from "./Matcher";
-export { MatchResult, MatchedMatchResult, FailedMatchResult, Description, Diff } from "./MatchResult";
+export { MatchResult, Diff } from "./MatchResult";
 export { assertThat, AssertionError } from "./MatcherAssert";
 export * from "./Printing";
 

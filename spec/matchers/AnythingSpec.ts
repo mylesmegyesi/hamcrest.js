@@ -1,4 +1,4 @@
-import { anything, assertThat, DescriptionBuilder, equalTo } from "../../src";
+import { anything, assertThat, equalTo, is } from "../../src";
 
 describe("Anything", () => {
   it("always matches", () => {
@@ -6,12 +6,18 @@ describe("Anything", () => {
 
     const matchResult = matcher.match(1);
 
-    assertThat(matchResult, equalTo({
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected("anything")
-        .setActual("1")
-        .build(),
-    }));
+    assertThat(matchResult, equalTo({ matches: true }));
+  });
+
+  it("describes expected", () => {
+    const matcher = anything();
+
+    assertThat(matcher.describeExpected(), is("anything"));
+  });
+
+  it("describes actual by printing the value", () => {
+    const matcher = anything();
+
+    assertThat(matcher.describeActual(1), is("1"));
   });
 });

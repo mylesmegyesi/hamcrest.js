@@ -1,27 +1,23 @@
-import { assertThat, DescriptionBuilder, equalTo, isUndefined, Matcher } from "../../src";
+import { assertThat, equalTo, is, isUndefined } from "../../src";
 
 describe("IsUndefined", () => {
   it("matches if the value is undefined", () => {
-    const matcher: Matcher<number | undefined> = isUndefined<number>();
+    const result = isUndefined<number>().match(undefined);
 
-    assertThat(matcher.match(undefined), equalTo({
+    assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected("undefined")
-        .setActual("undefined")
-        .build(),
+      diff: {
+        expected: undefined,
+        actual: undefined,
+      },
     }));
   });
 
   it("fails if the value is not undefined", () => {
-    const matcher: Matcher<number | undefined> = isUndefined<number>();
+    const result = isUndefined<number>().match(1);
 
-    assertThat(matcher.match(1), equalTo({
-      matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected("undefined")
-        .setActual("1")
-        .build(),
+    assertThat(result, equalTo({
+      matches: false,
       diff: {
         expected: undefined,
         actual: 1,
@@ -30,18 +26,26 @@ describe("IsUndefined", () => {
   });
 
   it("fails if the value is null", () => {
-    const matcher: Matcher<null | undefined> = isUndefined<null>();
+    const result = isUndefined<null>().match(null);
 
-    assertThat(matcher.match(null), equalTo({
-      matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected("undefined")
-        .setActual("null")
-        .build(),
+    assertThat(result, equalTo({
+      matches: false,
       diff: {
         expected: undefined,
         actual: null,
       },
     }));
+  });
+
+  it("describes the expected", () => {
+    const matcher = isUndefined<number>();
+
+    assertThat(matcher.describeExpected(), is("undefined"));
+  });
+
+  it("describes the actual", () => {
+    const matcher = isUndefined<number>();
+
+    assertThat(matcher.describeActual(1), is("1"));
   });
 });

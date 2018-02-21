@@ -1,4 +1,6 @@
-import { descriptionToString } from "./DescriptionPrinter";
+import valueIsUndefined = require("lodash.isundefined");
+
+import { DescriptionBuilder } from "./Description";
 import { Matcher } from "./Matcher";
 import { Diff } from "./MatchResult";
 
@@ -19,13 +21,22 @@ export class AssertionError extends Error {
   }
 }
 
-export function assertThat<T>(actual: T, matcher: Matcher<T>): void {
+export function assertThat<A, T>(actual: A, matcher: Matcher<A, T>): void {
   const matchResult = matcher.match(actual);
   if (matchResult.matches) {
     return;
   }
+  const builder = new DescriptionBuilder(
+    matcher.describeExpected(),
+    matcher.describeActual(actual),
+  );
 
-  const message = descriptionToString(matchResult.description);
+  const matchData = matchResult.data;
+  if (!valueIsUndefined(matchData)) {
+    matcher.describeResult(matchData, builder);
+  }
+
+  const message = builder.build();
   const error = new AssertionError(message, matchResult.diff);
 
   if (error.stack) {

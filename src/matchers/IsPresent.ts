@@ -1,22 +1,41 @@
+import valueIsNull = require("lodash.isnull");
+import valueIsUndefined = require("lodash.isundefined");
+
+import { BaseMatcher } from "../BaseMatcher";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
 
 import { isAbsent } from "./IsAbsent";
 import { not } from "./Not";
 
-class IsPresent<T> implements Matcher<T | null | undefined> {
+class IsPresent<T> extends BaseMatcher<T | null | undefined> {
   public constructor(private notAbsentMatcher: Matcher<T | null | undefined>,
-                     private valueMatcher?: Matcher<T>) {}
+                     private valueMatcher?: Matcher<T>) {
+    super();
+  }
 
   public match(actual: T | null | undefined): MatchResult {
-    const notAbsentResult = this.notAbsentMatcher.match(actual);
-    if (notAbsentResult.matches && this.valueMatcher) {
-
-      // tslint:disable-next-line no-non-null-assertion //
-      return this.valueMatcher.match(actual!);
+    if (valueIsNull(actual) || valueIsUndefined(actual)) {
+      return {
+        matches: false,
+      };
     }
 
-    return notAbsentResult;
+    if (this.valueMatcher) {
+      return this.valueMatcher.match(actual);
+    }
+
+    return {
+      matches: true,
+    };
+  }
+
+  public describeExpected(): string {
+    if (this.valueMatcher) {
+      return this.valueMatcher.describeExpected();
+    } else {
+      return this.notAbsentMatcher.describeExpected();
+    }
   }
 }
 

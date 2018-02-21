@@ -1,75 +1,50 @@
 import { EOL } from "os";
 
-import { assertThat, Description, is } from "../src";
-import { descriptionToString } from "../src/DescriptionPrinter";
+import { assertThat, DescriptionBuilder, is } from "../src";
 
 describe("DescriptionPrinter", () => {
   it("prints a typical description", () => {
-    const description: Description = {
-      expected: "something",
-      actual: "something else",
-      extraLines: [
-        {
-          label: "extra 1",
-          value: "extra value 1",
-        },
-        {
-          label: "extra 2",
-          value: "extra value 2",
-        },
-      ],
-    };
+    const description = new DescriptionBuilder("something", "something else")
+      .addExtraLine("extra 1", "extra value 1")
+      .addExtraLine("extra 2", "extra value 2")
+      .build();
 
-    const s = descriptionToString(description);
-
-    const expected = `${EOL}` +
+    assertThat(description, is(
+      `${EOL}` +
       `Expected: something${EOL}` +
       `     got: something else${EOL}` +
       ` extra 1: extra value 1${EOL}` +
-      ` extra 2: extra value 2${EOL}`;
-
-    assertThat(s, is(expected));
+      ` extra 2: extra value 2${EOL}`,
+    ));
   });
 
   it("indents multi-line values separated with LF", () => {
-    const description: Description = {
-      expected: `{\n  "a": 1\n}`,
-      actual: `{\n  "a": 1,\n  "b": 2\n}`,
-      extraLines: [],
-    };
+    const description = new DescriptionBuilder(`{\n  "a": 1\n}`, `{\n  "a": 1,\n  "b": 2\n}`).build();
 
-    const s = descriptionToString(description);
-
-    const expected = `${EOL}` +
+    assertThat(description, is(
+      `${EOL}` +
       `Expected: {${EOL}` +
       `            "a": 1${EOL}` +
       `          }${EOL}` +
       `     got: {${EOL}` +
       `            "a": 1,${EOL}` +
       `            "b": 2${EOL}` +
-      `          }${EOL}`;
-
-    assertThat(s, is(expected));
+      `          }${EOL}`,
+    ));
   });
 
   it("indents multi-line values separated with CRLF", () => {
-    const description: Description = {
-      expected: `{\r\n  "a": 1\r\n}`,
-      actual: `{\r\n  "a": 1,\r\n  "b": 2\r\n}`,
-      extraLines: [],
-    };
+    const description = new DescriptionBuilder(`{\r\n  "a": 1\r\n}`, `{\r\n  "a": 1,\r\n  "b": 2\r\n}`).build();
 
-    const s = descriptionToString(description);
-
-    const expected = `${EOL}` +
+    assertThat(description, is(
+      `${EOL}` +
       `Expected: {${EOL}` +
       `            "a": 1${EOL}` +
       `          }${EOL}` +
       `     got: {${EOL}` +
       `            "a": 1,${EOL}` +
       `            "b": 2${EOL}` +
-      `          }${EOL}`;
-
-    assertThat(s, is(expected));
+      `          }${EOL}`,
+    ));
   });
 });

@@ -1,27 +1,23 @@
-import { assertThat, DescriptionBuilder, equalTo, isNull, Matcher } from "../../src";
+import { assertThat, equalTo, is, isNull } from "../../src";
 
 describe("IsNull", () => {
   it("matches if the value is null", () => {
-    const matcher: Matcher<number | null> = isNull<number>();
+    const result = isNull<number>().match(null);
 
-    assertThat(matcher.match(null), equalTo({
+    assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected("null")
-        .setActual("null")
-        .build(),
+      diff: {
+        expected: null,
+        actual: null,
+      },
     }));
   });
 
   it("fails if the value is not null", () => {
-    const matcher: Matcher<number | null> = isNull<number>();
+    const result = isNull<number>().match(1);
 
-    assertThat(matcher.match(1), equalTo({
-      matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected("null")
-        .setActual("1")
-        .build(),
+    assertThat(result, equalTo({
+      matches: false,
       diff: {
         expected: null,
         actual: 1,
@@ -30,18 +26,26 @@ describe("IsNull", () => {
   });
 
   it("fails if the value is undefined", () => {
-    const matcher: Matcher<undefined | null> = isNull<undefined>();
+    const result = isNull<undefined>().match(undefined);
 
-    assertThat(matcher.match(undefined), equalTo({
+    assertThat(result, equalTo({
       matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected("null")
-        .setActual("undefined")
-        .build(),
       diff: {
         expected: null,
         actual: undefined,
       },
     }));
+  });
+
+  it("describes the expected", () => {
+    const matcher = isNull<undefined>();
+
+    assertThat(matcher.describeExpected(), is("null"));
+  });
+
+  it("describes the actual", () => {
+    const matcher = isNull<number>();
+
+    assertThat(matcher.describeActual(1), is("1"));
   });
 });

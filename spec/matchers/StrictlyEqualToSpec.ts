@@ -1,4 +1,4 @@
-import { assertThat, DescriptionBuilder, equalTo, strictlyEqualTo } from "../../src";
+import { assertThat, equalTo, is, strictlyEqualTo } from "../../src";
 
 describe("StrictlyEqualTo", () => {
   it("matches if two objects the same instance", () => {
@@ -8,10 +8,10 @@ describe("StrictlyEqualTo", () => {
 
     assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected("{ a: 1 }")
-        .setActual("{ a: 1 }")
-        .build(),
+      diff: {
+        expected: value,
+        actual: value,
+      },
     }));
   });
 
@@ -22,15 +22,24 @@ describe("StrictlyEqualTo", () => {
     const result = strictlyEqualTo(expected).match(actual);
 
     assertThat(result, equalTo({
-      matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected("{ a: 1 }")
-        .setActual("{ a: 1 }")
-        .build(),
+      matches: false,
       diff: {
         expected,
         actual,
       },
     }));
+  });
+
+  it("describes expected", () => {
+    const matcher = strictlyEqualTo({ a: 1 });
+
+    assertThat(matcher.describeExpected(), is("{ a: 1 }"));
+  });
+
+  it("describes actual", () => {
+    const value = { a: 1 };
+    const matcher = strictlyEqualTo(value);
+
+    assertThat(matcher.describeActual(value), is("{ a: 1 }"));
   });
 });
