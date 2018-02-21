@@ -1,35 +1,40 @@
-import { assertThat, DescriptionBuilder, equalTo, isTrue } from "../../src";
+import { assertThat, equalTo, is, isTrue } from "../../src";
 
 describe("IsTrue", () => {
   it("matches when the actual is true", () => {
-    const matcher = isTrue();
-
-    const result = matcher.match(true);
+    const result = isTrue().match(true);
 
     assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected("true")
-        .setActual("true")
-        .build(),
+      diff: {
+        expected: true,
+        actual: true,
+      },
     }));
   });
 
   it("fails when the actual is false", () => {
-    const matcher = isTrue();
-
-    const result = matcher.match(false);
+    const result = isTrue().match(false);
 
     assertThat(result, equalTo({
-      matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected("true")
-        .setActual("false")
-        .build(),
+      matches: false,
       diff: {
         expected: true,
         actual: false,
       },
     }));
+  });
+
+  it("describes the expected", () => {
+    const matcher = isTrue();
+
+    assertThat(matcher.describeExpected(), is("true"));
+  });
+
+  it("describes the actual", () => {
+    const matcher = isTrue();
+
+    assertThat(matcher.describeActual(true), is("true"));
+    assertThat(matcher.describeActual(false), is("false"));
   });
 });

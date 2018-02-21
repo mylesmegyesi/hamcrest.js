@@ -1,17 +1,17 @@
-import { assertThat, containsObject, equalTo, is, isFalse, isTrue, matchesObject } from "../../src";
+import { assertThat, equalTo, is, isFalse, isTrue, matchesObject } from "../../src";
 
 describe("EqualTo", () => {
   it("matches if two objects have the same value", () => {
     const actual = { a: 1 };
     const expected = { a: 1 };
 
-    const matcher = equalTo(actual);
+    const matcher = equalTo(expected);
 
-    assertThat(matcher.match(expected), matchesObject({
+    assertThat(matcher.match(actual), matchesObject({
       matches: isTrue(),
-      description: containsObject({
-        expected: is("{ a: 1 }"),
-        actual: is("{ a: 1 }"),
+      diff: matchesObject({
+        expected: is(expected),
+        actual: is(actual),
       }),
     }));
   });
@@ -20,18 +20,26 @@ describe("EqualTo", () => {
     const actual = { a: 1 };
     const expected = { a: 2 };
 
-    const result = equalTo(expected).match(actual);
+    assertThat(
+      equalTo(expected).match(actual),
+      matchesObject({
+        matches: isFalse(),
+        diff: matchesObject({
+          expected: is(expected),
+          actual: is(actual),
+        }),
+      }));
+  });
 
-    assertThat(result, containsObject({
-      matches: isFalse(),
-      description: containsObject({
-        expected: is("{ a: 2 }"),
-        actual: is("{ a: 1 }"),
-      }),
-      diff: containsObject({
-        expected: is(expected),
-        actual: is(actual),
-      }),
-    }));
+  it("describes the expected by printing the value", () => {
+    const matcher = equalTo({ a: 2 });
+
+    assertThat(matcher.describeExpected(), is("{ a: 2 }"));
+  });
+
+  it("describes the actual by printing the value", () => {
+    const matcher = equalTo({ a: 2 });
+
+    assertThat(matcher.describeActual({ a: 1 }), is("{ a: 1 }"));
   });
 });

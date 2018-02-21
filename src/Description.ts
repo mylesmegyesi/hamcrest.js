@@ -1,6 +1,9 @@
 import { EOL } from "os";
 
-import { Description, DescriptionLine } from "./MatchResult";
+export type DescriptionLine = Readonly<{
+  label: string;
+  value: string;
+}>;
 
 function indent(value: string, size: number): string {
   const indentBuffer = " ".repeat(size);
@@ -24,16 +27,35 @@ function buildLines(lines: DescriptionLine[]): string {
 const ACTUAL: string = "got";
 const EXPECTED: string = "Expected";
 
-export function descriptionToString(description: Description): string {
-  return buildLines([
-    {
-      label: EXPECTED,
-      value: description.expected,
-    },
-    {
-      label: ACTUAL,
-      value: description.actual,
-    },
-    ...description.extraLines,
-  ]);
+export class DescriptionBuilder {
+  private _extraLines: DescriptionLine[] = [];
+
+  public constructor(private readonly _expected: string,
+                     private readonly _actual: string) {}
+
+  public get extraLines(): ReadonlyArray<DescriptionLine> {
+    return this._extraLines;
+  }
+
+  public addExtraLine(label: string, value: string): this {
+    this._extraLines.push({
+      label,
+      value,
+    });
+    return this;
+  }
+
+  public build(): string {
+    return buildLines([
+      {
+        label: EXPECTED,
+        value: this._expected,
+      },
+      {
+        label: ACTUAL,
+        value: this._actual,
+      },
+      ...this._extraLines,
+    ]);
+  }
 }

@@ -1,34 +1,35 @@
-import { DescriptionBuilder } from "../DescriptionBuilder";
+import { BaseMatcher } from "../BaseMatcher";
 import { Matcher } from "../Matcher";
-import { Description, MatchResult } from "../MatchResult";
-import { printValue } from "../Printing";
+import { MatchResult } from "../MatchResult";
 
-class AllOf<T> implements Matcher<T> {
-  public constructor(private matchers: Matcher<T>[]) {}
+class AllOf<T> extends BaseMatcher<T> {
+  public constructor(private matchers: Matcher<T>[]) {
+    super();
+  }
 
   public match(actual: T): MatchResult {
-    const descriptions: Description[] = [];
     for (const matcher of this.matchers) {
       const result = matcher.match(actual);
-      descriptions.push(result.description);
       if (!result.matches) {
         return result;
       }
     }
-    const description = descriptions.length === 1
-      ? descriptions[0]
-      : DescriptionBuilder()
-        .setExpected(`(${descriptions.map(d => d.expected).join(" and ")})`)
-        .setActual(printValue(actual))
-        .build();
 
     return {
       matches: true,
-      description,
     };
+  }
+
+  public describeExpected(): string {
+    const expected = this.matchers.map(d => d.describeExpected());
+    if (expected.length === 1) {
+      return expected[0];
+    }
+
+    return `(${expected.join(" and ")})`;
   }
 }
 
 export function allOf<T>(...matchers: Matcher<T>[]): Matcher<T> {
-  return new AllOf(matchers);
+  return new AllOf<T>(matchers);
 }

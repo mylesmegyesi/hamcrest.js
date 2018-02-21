@@ -22,7 +22,7 @@
     "sinon": "^4.1.2",
     "ts-node": "^3.3.0",
     "tslint": "^5.8.0",
-    "typescript": "^2.6.2"
+    "typescript": "^2.7.2"
   },
   "dependencies": {
     "lodash.isboolean": "^3.0.3",

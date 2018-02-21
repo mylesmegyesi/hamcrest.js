@@ -1,34 +1,30 @@
 import * as assert from "assert";
 import { EOL } from "os";
 
-import { AssertionError, assertThat, DescriptionBuilder } from "../src";
+import { AssertionError, assertThat } from "../src";
 
-import { mockMatcher } from "./MockMatcher";
+import { MockMatcher } from "./MockMatcher";
 
 describe("MatcherAssert", () => {
   it("assertThat does nothing when the matcher matches", () => {
-    const matcher = mockMatcher({
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected("something")
-        .setActual("something else")
-        .build(),
-    });
+    const matcher = MockMatcher.builder()
+      .setMatches(true)
+      .setExpected("something")
+      .setActual("something else")
+      .build();
 
     assertThat(1, matcher);
 
-    assert.equal(matcher.actual, 1);
+    assert.equal(matcher.matchActual, 1);
     assert.equal(matcher.matchCalledCount, 1);
   });
 
   it("assertThat throws when the match fails", () => {
-    const matcher = mockMatcher({
-      matches: false,
-      description: DescriptionBuilder()
-        .setExpected("something")
-        .setActual("something else")
-        .build(),
-    });
+    const matcher = MockMatcher.builder()
+      .setMatches(false)
+      .setExpected("something")
+      .setActual("something else")
+      .build();
 
     catchAssertionError(() => { assertThat(1, matcher); }, e => {
       const expectedAssertionMessage = `${EOL}` +
@@ -63,17 +59,15 @@ describe("MatcherAssert", () => {
   }
 
   it("assertThat sets showDiff when return in the result", () => {
-    const matcher = mockMatcher({
-      matches: false,
-      description: DescriptionBuilder()
-        .setExpected("something")
-        .setActual("something else")
-        .build(),
-      diff: {
+    const matcher = MockMatcher.builder()
+      .setMatches(false)
+      .setExpected("something")
+      .setActual("something else")
+      .setDiff({
         expected: "something",
         actual: "something else",
-      },
-    });
+      })
+      .build();
 
     catchAssertionError(() => { assertThat(1, matcher); }, e => {
       assert.equal(e.showDiff, true);

@@ -1,18 +1,29 @@
 import { EOL } from "os";
 
-import { DescriptionBuilder } from "../DescriptionBuilder";
+import valueIsUndefined = require("lodash.isundefined");
+
+import { BaseMatcher } from "../BaseMatcher";
+import { DescriptionBuilder } from "../Description";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
-import { printObject, printValue } from "../Printing";
+import { ObjectPrinters, printObject } from "../Printing";
 
 import { buildObjectDescriptionsPrinter, ObjectDescriptions } from "./ObjectDescriptions";
 import { ObjectMatchers } from "./ObjectMatchers";
 
-class ContainsObject<T> implements Matcher<T> {
-  public constructor(private expected: Partial<ObjectMatchers<T>>) {}
+export type ObjectDifferenceAnalysis<T> = {
+  missing: Partial<ObjectDescriptions<T>>;
+  failures: Partial<ObjectDescriptions<T>>;
+};
 
-  public match(actual: T): MatchResult {
-    const expectedDescription: Partial<ObjectDescriptions<T>> = {};
+class ContainsObject<T> extends BaseMatcher<T, ObjectDifferenceAnalysis<T>> {
+  private printDescriptions: ObjectPrinters<Partial<ObjectDescriptions<T>>> = buildObjectDescriptionsPrinter<T>();
+
+  public constructor(private expected: Partial<ObjectMatchers<T>>) {
+    super();
+  }
+
+  public match(actual: T): MatchResult<ObjectDifferenceAnalysis<T>> {
     const missing: Partial<ObjectDescriptions<T>> = {};
     const failures: Partial<ObjectDescriptions<T>> = {};
 
@@ -21,52 +32,53 @@ class ContainsObject<T> implements Matcher<T> {
         continue;
       }
 
-      const propertyMatcher = this.expected[key]!;
-      const propertyResult = propertyMatcher.match(actual[key]);
-
-      expectedDescription[key] = propertyResult.description.expected;
+      const propertyMatcher = this.expected[key];
+      if (valueIsUndefined(propertyMatcher)) {
+        continue;
+      }
 
       if (!actual.hasOwnProperty(key)) {
-        missing[key] = propertyResult.description.expected;
-      } else if (!propertyResult.matches) {
-        failures[key] = propertyResult.description.actual;
+        missing[key] = propertyMatcher.describeExpected();
+      } else if (!propertyMatcher.match(actual[key]).matches) {
+        failures[key] = propertyMatcher.describeActual(actual[key]);
       }
     }
 
-    const printDescriptions = buildObjectDescriptionsPrinter<T>();
+    return {
+      matches: !((Object.keys(failures).length > 0) || (Object.keys(missing).length > 0)),
+      data: {
+        missing,
+        failures,
+      },
+    };
+  }
 
-    const descriptionBuilder = DescriptionBuilder()
-      .setExpected(`an object containing:${EOL}${printObject(expectedDescription, printDescriptions)}`)
-      .setActual(printValue(actual));
+  public describeExpected(): string {
+    const expectedDescription: Partial<ObjectDescriptions<T>> = {};
 
-    let matches: boolean = true;
+    for (const key in this.expected) {
+      if (!this.expected.hasOwnProperty(key)) {
+        continue;
+      }
 
-    if (Object.keys(failures).length > 0) {
-      matches = false;
-      descriptionBuilder.addLine("failures", printObject(failures, printDescriptions));
+      const propertyMatcher = this.expected[key];
+      if (valueIsUndefined(propertyMatcher)) {
+        continue;
+      }
+
+      expectedDescription[key] = propertyMatcher.describeExpected();
     }
 
-    if (Object.keys(missing).length > 0) {
-      matches = false;
-      descriptionBuilder.addLine("missing", printObject(missing, printDescriptions));
-    }
+    return `an object containing:${EOL}${printObject(expectedDescription, this.printDescriptions)}`;
+  }
 
-    const description = descriptionBuilder.build();
-
-    if (matches) {
-      return {
-        matches: true,
-        description,
-      };
-    } else {
-      return {
-        matches: false,
-        description,
-      };
-    }
+  public describeResult(data: ObjectDifferenceAnalysis<T>, builder: DescriptionBuilder): void {
+    builder
+      .addExtraLine("failures", printObject(data.failures, this.printDescriptions))
+      .addExtraLine("missing", printObject(data.missing, this.printDescriptions));
   }
 }
 
-export function containsObject<T>(expected: Partial<ObjectMatchers<T>>): Matcher<T> {
+export function containsObject<T>(expected: Partial<ObjectMatchers<T>>): Matcher<T, ObjectDifferenceAnalysis<T>> {
   return new ContainsObject<T>(expected);
 }

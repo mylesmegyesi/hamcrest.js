@@ -1,39 +1,33 @@
-import { assertThat, DescriptionBuilder, equalTo, isAbsent, Matcher } from "../../src";
+import { assertThat, equalTo, is, isAbsent } from "../../src";
 
 describe("IsAbsent", () => {
   it("matches if actual is null", () => {
-    const matcher: Matcher<number | null | undefined> = isAbsent<number>();
+    const matcher = isAbsent<number>();
 
-    assertThat(matcher.match(null), equalTo({
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected("(null or undefined)")
-        .setActual("null")
-        .build(),
-    }));
+    assertThat(matcher.match(null), equalTo({ matches: true }));
   });
 
   it("matches if actual is undefined", () => {
-    const matcher: Matcher<number | null | undefined> = isAbsent<number>();
+    const matcher = isAbsent<number>();
 
-    assertThat(matcher.match(undefined), equalTo({
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected("(null or undefined)")
-        .setActual("undefined")
-        .build(),
-    }));
+    assertThat(matcher.match(undefined), equalTo({ matches: true }));
   });
 
   it("fails if the actual is not null or undefined", () => {
-    const matcher: Matcher<number | null | undefined> = isAbsent<number>();
+    const matcher = isAbsent<number>();
 
-    assertThat(matcher.match(1), equalTo({
-      matches: false,
-      description: DescriptionBuilder()
-        .setExpected("(null or undefined)")
-        .setActual("1")
-        .build(),
-    }));
+    assertThat(matcher.match(1), equalTo({ matches: false }));
+  });
+
+  it("describes the expected", () => {
+    const matcher = isAbsent<number>();
+
+    assertThat(matcher.describeExpected(), is("(null or undefined)"));
+  });
+
+  it("describes the actual by printing the value", () => {
+    const matcher = isAbsent<number>();
+
+    assertThat(matcher.describeActual(1), is("1"));
   });
 });

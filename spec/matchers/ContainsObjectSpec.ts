@@ -1,7 +1,7 @@
 import { EOL } from "os";
 
-import { anything, assertThat, containsObject, DescriptionBuilder, equalTo, is, printValue } from "../../src";
-import { mockMatcher } from "../MockMatcher";
+import { anything, assertThat, containsObject, DescriptionBuilder, equalTo, is } from "../../src";
+import { MockMatcher } from "../MockMatcher";
 
 describe("ContainsObject", () => {
   type O = {
@@ -14,23 +14,17 @@ describe("ContainsObject", () => {
     const actual: O = { a: 1, b: 2 };
 
     const containsObjectMatcher = containsObject<O>({
-      a: anything(),
-      b: anything(),
+      a: MockMatcher.matches(),
+      b: MockMatcher.matches(),
     });
     const result = containsObjectMatcher.match(actual);
 
     assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected(
-          `an object containing:${EOL}` +
-          `{${EOL}` +
-          `  a: anything,${EOL}` +
-          `  b: anything${EOL}` +
-          `}`,
-        )
-        .setActual(printValue(actual))
-        .build(),
+      data: {
+        failures: {},
+        missing: {},
+      },
     }));
   });
 
@@ -38,19 +32,16 @@ describe("ContainsObject", () => {
     const actual: O = { a: 1, b: 2 };
 
     const containsObjectMatcher = containsObject<O>({
-      a: anything(),
+      a: MockMatcher.matches(),
     });
     const result = containsObjectMatcher.match(actual);
 
     assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected(
-          `an object containing:${EOL}` +
-          `{ a: anything }`,
-        )
-        .setActual(printValue(actual))
-        .build(),
+      data: {
+        failures: {},
+        missing: {},
+      },
     }));
   });
 
@@ -58,46 +49,31 @@ describe("ContainsObject", () => {
     const actual: O = { a: 1, b: 2 };
 
     const containsObjectMatcher = containsObject<O>({
-      a: anything(),
-      b: anything(),
-      c: anything(),
+      a: MockMatcher.matches(),
+      b: MockMatcher.matches(),
+      c: MockMatcher.builder<number | undefined>()
+        .setMatches(true)
+        .setExpected("expected for c")
+        .build(),
     });
     const result = containsObjectMatcher.match(actual);
 
     assertThat(result, equalTo({
-      matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected(
-          `an object containing:${EOL}` +
-          `{${EOL}` +
-          `  a: anything,${EOL}` +
-          `  b: anything,${EOL}` +
-          `  c: anything${EOL}` +
-          `}`,
-        )
-        .setActual(printValue(actual))
-        .addLine("missing", `{ c: anything }`)
-        .build(),
+      matches: false,
+      data: {
+        failures: {},
+        missing: {
+          c: "expected for c",
+        },
+      },
     }));
   });
 
   it("matches when all the property matchers match", () => {
     const actual: O = { a: 1, b: 2 };
 
-    const aMatcher = mockMatcher({
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected("a1")
-        .setActual("b1")
-        .build(),
-    });
-    const bMatcher = mockMatcher({
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected("a2")
-        .setActual("b2")
-        .build(),
-    });
+    const aMatcher = MockMatcher.matches();
+    const bMatcher = MockMatcher.matches();
 
     const containsObjectMatcher = containsObject<O>({
       a: aMatcher,
@@ -107,43 +83,29 @@ describe("ContainsObject", () => {
 
     assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected(
-          `an object containing:${EOL}` +
-          `{${EOL}` +
-          `  a: a1,${EOL}` +
-          `  b: a2${EOL}` +
-          `}`,
-        )
-        .setActual(printValue(actual))
-        .build(),
+      data: {
+        failures: {},
+        missing: {},
+      },
     }));
     assertThat(aMatcher.matchCalledCount, is(1));
-    assertThat(aMatcher.actual, is(1));
+    assertThat(aMatcher.matchActual, is(1));
     assertThat(bMatcher.matchCalledCount, is(1));
-    assertThat(bMatcher.actual, is(2));
+    assertThat(bMatcher.matchActual, is(2));
   });
 
   it("fails when one property matcher fails", () => {
     const actual: O = { a: 1, b: 2 };
-    const aMatcher = mockMatcher({
-      matches: false,
-      description: DescriptionBuilder()
-        .setExpected("a1")
-        .setActual("b1")
-        .build(),
-      diff: {
-        expected: 1,
-        actual: 2,
-      },
-    });
-    const bMatcher = mockMatcher({
-      matches: true,
-      description: DescriptionBuilder()
-        .setExpected("a2")
-        .setActual("b2")
-        .build(),
-    });
+    const aMatcher = MockMatcher.builder()
+      .setMatches(false)
+      .setExpected("a1")
+      .setActual("b1")
+      .build();
+    const bMatcher = MockMatcher.builder()
+      .setMatches(true)
+      .setExpected("a2")
+      .setActual("b2")
+      .build();
 
     const containsObjectMatcher = containsObject<O>({
       a: aMatcher,
@@ -152,21 +114,16 @@ describe("ContainsObject", () => {
     const result = containsObjectMatcher.match(actual);
 
     assertThat(result, equalTo({
-      matches: false as false,
-      description: DescriptionBuilder()
-        .setExpected(
-          `an object containing:${EOL}` +
-          `{${EOL}` +
-          `  a: a1,${EOL}` +
-          `  b: a2${EOL}` +
-          `}`,
-        )
-        .setActual(printValue(actual))
-        .addLine("failures", `{ a: b1 }`)
-        .build(),
+      matches: false,
+      data: {
+        failures: {
+          a: "b1",
+        },
+        missing: {},
+      },
     }));
     assertThat(aMatcher.matchCalledCount, is(1));
-    assertThat(aMatcher.actual, is(1));
+    assertThat(aMatcher.matchActual, is(1));
     assertThat(bMatcher.matchCalledCount, is(1));
   });
 
@@ -181,16 +138,87 @@ describe("ContainsObject", () => {
 
     assertThat(result, equalTo({
       matches: true,
-      description: DescriptionBuilder()
-        .setExpected(
-          `an object containing:${EOL}` +
-          `{${EOL}` +
-          `  a: 1,${EOL}` +
-          `  b: 2${EOL}` +
-          `}`,
-        )
-        .setActual(printValue(actual))
-        .build(),
+      data: {
+        failures: {},
+        missing: {},
+      },
     }));
+  });
+
+  it("describes expected with an empty object", () => {
+    const containsObjectMatcher = containsObject({});
+
+    assertThat(containsObjectMatcher.describeExpected(), is(
+      `an object containing:${EOL}` +
+      `{  }`,
+    ));
+  });
+
+  it("describes expected with one property", () => {
+    const containsObjectMatcher = containsObject({ a: anything() });
+
+    assertThat(containsObjectMatcher.describeExpected(), is(
+      `an object containing:${EOL}` +
+      `{ a: anything }`,
+    ));
+  });
+
+  it("describes expected with multiple properties", () => {
+    const containsObjectMatcher = containsObject({
+      a: anything(),
+      b: equalTo(1),
+    });
+
+    assertThat(containsObjectMatcher.describeExpected(), is(
+      `an object containing:${EOL}` +
+      `{${EOL}` +
+      `  a: anything,${EOL}` +
+      `  b: 1${EOL}` +
+      `}`,
+    ));
+  });
+
+  it("describes actual by printing the value", () => {
+    const containsObjectMatcher = containsObject({
+      a: anything(),
+      b: equalTo(1),
+    });
+
+    assertThat(containsObjectMatcher.describeActual({ a: 2, b: 1 }), is(
+      `{${EOL}` +
+      `  a: 2,${EOL}` +
+      `  b: 1${EOL}` +
+      `}`,
+    ));
+  });
+
+  it("describes data", () => {
+    const aMatcher = MockMatcher.matches();
+    const bMatcher = MockMatcher.matches();
+
+    const containsObjectMatcher = containsObject<O>({
+      a: aMatcher,
+      b: bMatcher,
+    });
+
+    const builder = new DescriptionBuilder("expected", "actual");
+
+    const data = {
+      missing: { b: "expected value for b" },
+      failures: { c: "actual value for c" },
+    };
+
+    containsObjectMatcher.describeResult(data, builder);
+
+    assertThat(builder.extraLines, equalTo([
+      {
+        label: "failures",
+        value: "{ c: actual value for c }",
+      },
+      {
+        label: "missing",
+        value: "{ b: expected value for b }",
+      },
+    ]));
   });
 });

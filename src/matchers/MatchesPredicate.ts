@@ -1,34 +1,28 @@
-import { DescriptionBuilder } from "../DescriptionBuilder";
+import { BaseMatcher } from "../BaseMatcher";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
 import { printValue } from "../Printing";
 
 export type MatcherPredicate<E, A> = (expected: E, actual: A) => boolean;
 
-class MatchesPredicate<E, A> implements Matcher<A> {
+class MatchesPredicate<E, A> extends BaseMatcher<A> {
   public constructor(private expected: E,
-                     private predicate: MatcherPredicate<E, A>) {}
+                     private predicate: MatcherPredicate<E, A>) {
+    super();
+  }
 
   public match(actual: A): MatchResult {
-    const description = DescriptionBuilder()
-      .setExpected(printValue(this.expected))
-      .setActual(printValue(actual))
-      .build();
-    if (this.predicate(this.expected, actual)) {
-      return {
-        matches: true,
-        description,
-      };
-    } else {
-      return {
-        matches: false,
-        description,
-        diff: {
-          expected: this.expected,
-          actual,
-        },
-      };
-    }
+    return {
+      matches: this.predicate(this.expected, actual),
+      diff: {
+        expected: this.expected,
+        actual,
+      },
+    };
+  }
+
+  public describeExpected(): string {
+    return printValue(this.expected);
   }
 }
 
