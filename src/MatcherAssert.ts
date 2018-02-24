@@ -28,7 +28,7 @@ export function assertThat<A, T>(actual: A, matcher: Matcher<A, T>): void {
   }
   const builder = new DescriptionBuilder(
     matcher.describeExpected(),
-    matcher.describeActual(actual),
+    matcher.describeActual(actual, matchResult.data),
   );
 
   const matchData = matchResult.data;

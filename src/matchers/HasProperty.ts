@@ -5,12 +5,12 @@ import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
 import { isMultiLine } from "../Printing";
 
-class HasProperty<T, K extends keyof T> extends BaseMatcher<T> {
-  public constructor(private property: K, private valueMatcher?: Matcher<T[K]>) {
+class HasProperty<T, K extends keyof T> extends BaseMatcher<T, never> {
+  public constructor(private property: K, private valueMatcher?: Matcher<T[K], any>) {
     super();
   }
 
-  public match(actual: T): MatchResult {
+  public match(actual: T): MatchResult<never> {
     return {
       matches: actual.hasOwnProperty(this.property) && (
         this.valueMatcher
@@ -33,6 +33,6 @@ class HasProperty<T, K extends keyof T> extends BaseMatcher<T> {
   }
 }
 
-export function hasProperty<T, K extends keyof T>(property: K, valueMatcher?: Matcher<T[K]>): Matcher<T> {
+export function hasProperty<T, K extends keyof T>(property: K, valueMatcher?: Matcher<T[K], any>): Matcher<T, never> {
   return new HasProperty<T, K>(property, valueMatcher);
 }

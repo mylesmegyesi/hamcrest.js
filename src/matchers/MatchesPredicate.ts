@@ -5,13 +5,13 @@ import { printValue } from "../Printing";
 
 export type MatcherPredicate<E, A> = (expected: E, actual: A) => boolean;
 
-class MatchesPredicate<E, A> extends BaseMatcher<A> {
+class MatchesPredicate<E, A> extends BaseMatcher<A, never> {
   public constructor(private expected: E,
                      private predicate: MatcherPredicate<E, A>) {
     super();
   }
 
-  public match(actual: A): MatchResult {
+  public match(actual: A): MatchResult<never> {
     return {
       matches: this.predicate(this.expected, actual),
       diff: {
@@ -26,6 +26,6 @@ class MatchesPredicate<E, A> extends BaseMatcher<A> {
   }
 }
 
-export function matches<E, A>(expected: E, predicate: MatcherPredicate<E, A>): Matcher<A> {
+export function matches<E, A>(expected: E, predicate: MatcherPredicate<E, A>): Matcher<A, never> {
   return new MatchesPredicate<E, A>(expected, predicate);
 }
