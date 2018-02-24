@@ -1,51 +1,48 @@
-import { assertThat, equalTo, is, isUndefined } from "../../src";
+import { assertThat, isUndefined } from "../../src";
+import {
+  matcherDescribesActualAs,
+  matcherDescribesExpectedAs,
+  matcherFails,
+  matcherMatches,
+} from "../../src/MatcherMatchers";
 
 describe("IsUndefined", () => {
   it("matches if the value is undefined", () => {
-    const result = isUndefined<number>().match(undefined);
+    const matcher = isUndefined<number>();
 
-    assertThat(result, equalTo({
-      matches: true,
-      diff: {
-        expected: undefined,
-        actual: undefined,
-      },
-    }));
+    assertThat(matcher, matcherMatches<number | undefined>().andReturnsDiff({
+      expected: undefined,
+      actual: undefined,
+    }).given(undefined));
   });
 
   it("fails if the value is not undefined", () => {
-    const result = isUndefined<number>().match(1);
+    const matcher = isUndefined<number>();
 
-    assertThat(result, equalTo({
-      matches: false,
-      diff: {
-        expected: undefined,
-        actual: 1,
-      },
-    }));
+    assertThat(matcher, matcherFails<number | undefined>().andReturnsDiff({
+      expected: undefined,
+      actual: 1,
+    }).given(1));
   });
 
   it("fails if the value is null", () => {
-    const result = isUndefined<null>().match(null);
+    const matcher = isUndefined<null>();
 
-    assertThat(result, equalTo({
-      matches: false,
-      diff: {
-        expected: undefined,
-        actual: null,
-      },
-    }));
+    assertThat(matcher, matcherFails<null | undefined>().andReturnsDiff({
+      expected: undefined,
+      actual: null,
+    }).given(null));
   });
 
   it("describes the expected", () => {
     const matcher = isUndefined<number>();
 
-    assertThat(matcher.describeExpected(), is("undefined"));
+    assertThat(matcher, matcherDescribesExpectedAs("undefined"));
   });
 
   it("describes the actual", () => {
     const matcher = isUndefined<number>();
 
-    assertThat(matcher.describeActual(1), is("1"));
+    assertThat(matcher, matcherDescribesActualAs<number | undefined>("1").given(1));
   });
 });

@@ -1,45 +1,87 @@
-import { assertThat, equalTo, isPresent } from "../../src";
+import { assertThat, isPresent } from "../../src";
+import {
+  matcherDescribesActualAs,
+  matcherDescribesExpectedAs,
+  matcherFails,
+  matcherMatches,
+} from "../../src/MatcherMatchers";
+import { describeActualCalled, MockMatcher } from "../../src/MockMatcher";
 
 describe("IsPresent", () => {
   it("matches if the value is not null or undefined", () => {
-    const result = isPresent<number>().match(1);
-
-    assertThat(result, equalTo({ matches: true }));
+    assertThat(isPresent<number>(), matcherMatches<number>().given(1));
   });
 
   it("fails if the value is null", () => {
-    const result = isPresent<number>().match(null);
-
-    assertThat(result, equalTo({ matches: false }));
+    assertThat(isPresent<number>(), matcherFails<number | null>().given(null));
   });
 
   it("fails if the value is undefined", () => {
-    const result = isPresent<number>().match(undefined);
-
-    assertThat(result, equalTo({ matches: false }));
+    assertThat(isPresent<number>(), matcherFails<number | undefined>().given(undefined));
   });
 
   it("matches if the value is not null or undefined and the value matcher matches", () => {
-    const result = isPresent<number>(equalTo(1)).match(1);
+    const matcher = isPresent<number>(
+      MockMatcher.builder()
+        .setMatches(true)
+        .setDiff({ expected: 1, actual: 1 })
+        .build(),
+    );
 
-    assertThat(result, equalTo({
-      matches: true,
-      diff: {
-        expected: 1,
-        actual: 1,
-      },
-    }));
+    assertThat(matcher, matcherMatches<number | undefined>().andReturnsDiff({
+      expected: 1,
+      actual: 1,
+    }).given(1));
   });
 
   it("fails if the value is not null or undefined and the value matcher fails", () => {
-    const result = isPresent<number>(equalTo(2)).match(1);
+    const matcher = isPresent<number>(
+      MockMatcher.builder()
+        .setMatches(false)
+        .setDiff({ expected: 2, actual: 1 })
+        .build(),
+    );
 
-    assertThat(result, equalTo({
-      matches: false,
-      diff: {
-        expected: 2,
-        actual: 1,
-      },
-    }));
+    assertThat(matcher, matcherFails<number | undefined>().andReturnsDiff({
+      expected: 2,
+      actual: 1,
+    }).given(1));
+  });
+
+  it("describes the expected with no value matcher", () => {
+    const matcher = isPresent<number>();
+
+    assertThat(matcher, matcherDescribesExpectedAs("not (null or undefined)"));
+  });
+
+  it("describes the expected with value matcher", () => {
+    const matcher = isPresent<number>(
+      MockMatcher.builder()
+        .setExpected("expected value")
+        .build(),
+    );
+
+    assertThat(matcher, matcherDescribesExpectedAs("expected value"));
+  });
+
+  it("describes the actual by printing the value when no value matcher", () => {
+    const matcher = isPresent<number>();
+
+    assertThat(matcher, matcherDescribesActualAs<number>("1").given(1));
+    assertThat(matcher, matcherDescribesActualAs<number | null>("null").given(null));
+    assertThat(matcher, matcherDescribesActualAs<number | undefined>("undefined").given(undefined));
+  });
+
+  it("describes the actual given a value matcher", () => {
+    const valueMatcher = MockMatcher.builder()
+      .setActual("actual value")
+      .build();
+    const matcher = isPresent<number>(valueMatcher);
+
+    assertThat(matcher, matcherDescribesActualAs<number>("actual value").given(1));
+    assertThat(matcher, matcherDescribesActualAs<number | null>("null").given(null));
+    assertThat(matcher, matcherDescribesActualAs<number | undefined>("undefined").given(undefined));
+
+    assertThat(valueMatcher, describeActualCalled().with(1).times(1));
   });
 });

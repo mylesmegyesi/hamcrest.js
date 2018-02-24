@@ -1,5 +1,17 @@
-import { allOf, assertThat, equalTo, is } from "../../src";
-import { MockMatcher } from "../MockMatcher";
+import { allOf, assertThat } from "../../src";
+import {
+  matcherDescribesActualAs,
+  matcherDescribesExpectedAs,
+  matcherFails,
+  matcherMatches,
+} from "../../src/MatcherMatchers";
+import {
+  describeActualNotCalled,
+  describeExpectedCalled,
+  matchCalled,
+  matchNotCalled,
+  MockMatcher,
+} from "../../src/MockMatcher";
 
 describe("AllOf", () => {
   it("matches if all the matchers match", () => {
@@ -9,16 +21,11 @@ describe("AllOf", () => {
 
     const allOfMatcher = allOf(matcher1, matcher2, matcher3);
 
-    assertThat(allOfMatcher.match("actual"), equalTo({
-      matches: true,
-    }));
+    assertThat(allOfMatcher, matcherMatches().given("actual"));
 
-    assertThat(matcher1.matchCalledCount, is(1));
-    assertThat(matcher1.matchActual, is("actual"));
-    assertThat(matcher2.matchCalledCount, is(1));
-    assertThat(matcher2.matchActual, is("actual"));
-    assertThat(matcher3.matchCalledCount, is(1));
-    assertThat(matcher3.matchActual, is("actual"));
+    assertThat(matcher1, matchCalled().with("actual").times(1));
+    assertThat(matcher2, matchCalled().with("actual").times(1));
+    assertThat(matcher3, matchCalled().with("actual").times(1));
   });
 
   it("fails if one of the matchers fails", () => {
@@ -28,13 +35,11 @@ describe("AllOf", () => {
 
     const allOfMatcher = allOf(matcher1, matcher2, matcher3);
 
-    assertThat(allOfMatcher.match("actual"), equalTo({
-      matches: false,
-    }));
+    assertThat(allOfMatcher, matcherFails().given("actual"));
 
-    assertThat(matcher1.matchCalledCount, is(1));
-    assertThat(matcher2.matchCalledCount, is(1));
-    assertThat(matcher3.matchCalledCount, is(0));
+    assertThat(matcher1, matchCalled().with("actual").times(1));
+    assertThat(matcher2, matchCalled().with("actual").times(1));
+    assertThat(matcher3, matchNotCalled());
   });
 
   it("describes expected with one matcher", () => {
@@ -42,9 +47,9 @@ describe("AllOf", () => {
       .setExpected("something1")
       .build();
 
-    assertThat(allOf(matcher).describeExpected(), is("something1"));
+    assertThat(allOf(matcher), matcherDescribesExpectedAs("something1"));
 
-    assertThat(matcher.describeExpectedCalledCount, is(1));
+    assertThat(matcher, describeExpectedCalled().times(1));
   });
 
   it("describes expected with multiple matchers", () => {
@@ -58,20 +63,21 @@ describe("AllOf", () => {
       .setExpected("something3")
       .build();
 
-    assertThat(allOf(matcher1, matcher2, matcher3).describeExpected(), is("(something1 and something2 and something3)"));
+    assertThat(allOf(matcher1, matcher2, matcher3), matcherDescribesExpectedAs("(something1 and something2 and something3)"));
 
-    assertThat(matcher1.describeExpectedCalledCount, is(1));
-    assertThat(matcher2.describeExpectedCalledCount, is(1));
-    assertThat(matcher3.describeExpectedCalledCount, is(1));
+    assertThat(matcher1, describeExpectedCalled().times(1));
+    assertThat(matcher2, describeExpectedCalled().times(1));
+    assertThat(matcher3, describeExpectedCalled().times(1));
   });
 
   it("describes actual by printing the value", () => {
-    const matcher = MockMatcher.builder()
+    const matcher = MockMatcher.builder<string, string>()
       .setActual("something")
+      .setData("matcher data")
       .build();
 
-    assertThat(allOf(matcher).describeActual(1), is("1"));
+    assertThat(allOf(matcher), matcherDescribesActualAs("1").given(1));
 
-    assertThat(matcher.describeActualCalledCount, is(0));
+    assertThat(matcher, describeActualNotCalled());
   });
 });

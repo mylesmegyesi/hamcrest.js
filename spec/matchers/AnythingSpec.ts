@@ -1,23 +1,22 @@
-import { anything, assertThat, equalTo, is } from "../../src";
+import { anything, assertThat } from "../../src";
+import { matcherDescribesActualAs, matcherDescribesExpectedAs, matcherMatches } from "../../src/MatcherMatchers";
 
 describe("Anything", () => {
   it("always matches", () => {
     const matcher = anything();
 
-    const matchResult = matcher.match(1);
-
-    assertThat(matchResult, equalTo({ matches: true }));
+    assertThat(matcher, matcherMatches().given(1));
   });
 
   it("describes expected", () => {
     const matcher = anything();
 
-    assertThat(matcher.describeExpected(), is("anything"));
+    assertThat(matcher, matcherDescribesExpectedAs("anything"));
   });
 
   it("describes actual by printing the value", () => {
     const matcher = anything();
 
-    assertThat(matcher.describeActual(1), is("1"));
+    assertThat(matcher, matcherDescribesActualAs("1").given(1));
   });
 });

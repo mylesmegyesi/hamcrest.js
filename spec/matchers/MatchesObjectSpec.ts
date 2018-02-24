@@ -1,7 +1,21 @@
 import { EOL } from "os";
 
-import { assertThat, DescriptionBuilder, equalTo, is, matchesObject } from "../../src/index";
-import { MockMatcher } from "../MockMatcher";
+import { assertThat, matchesObject } from "../../src";
+import {
+  describesExtraLinesAs,
+  matcherDescribesActualAs,
+  matcherDescribesExpectedAs,
+  matcherFails,
+  matcherMatches,
+} from "../../src/MatcherMatchers";
+import { ObjectDifferenceAnalysis } from "../../src/matchers/MatchesObject";
+import {
+  describeActualCalled,
+  describeActualNotCalled,
+  describeExpectedCalled,
+  matchCalled,
+  MockMatcher,
+} from "../../src/MockMatcher";
 
 describe("MatchesObject", () => {
   type O = {
@@ -20,20 +34,15 @@ describe("MatchesObject", () => {
       a: aMatcher,
       b: bMatcher,
     });
-    const result = matchesObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({
-      matches: true,
-      data: {
-        extra: {},
-        missing: {},
-        failures: {},
-      },
-    }));
-    assertThat(aMatcher.matchCalledCount, is(1));
-    assertThat(aMatcher.matchActual, is(1));
-    assertThat(bMatcher.matchCalledCount, is(1));
-    assertThat(bMatcher.matchActual, is(2));
+    assertThat(matchesObjectMatcher, matcherMatches<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      extra: {},
+      missing: {},
+      failures: {},
+    }).given(actual));
+
+    assertThat(aMatcher, matchCalled().with(1).times(1));
+    assertThat(bMatcher, matchCalled().with(2).times(1));
   });
 
   it("fails when one property matcher fails", () => {
@@ -47,18 +56,14 @@ describe("MatchesObject", () => {
       a: aMatcher,
       b: bMatcher,
     });
-    const result = matchesObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({
-      matches: false,
-      data: {
-        extra: {},
-        missing: {},
-        failures: { b: "b actual" },
-      },
-    }));
+    assertThat(matchesObjectMatcher, matcherFails<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      extra: {},
+      missing: {},
+      failures: { b: "b actual" },
+    }).given(actual));
 
-    assertThat(bMatcher.describeActualCalledCount, is(1));
+    assertThat(bMatcher, describeActualCalled().with(2).times(1));
   });
 
   it("fails if there are any extra keys", () => {
@@ -75,16 +80,11 @@ describe("MatchesObject", () => {
       b: bMatcher,
     });
 
-    const result = matchesObjectMatcher.match(actual);
-
-    assertThat(result, equalTo({
-      matches: false,
-      data: {
-        extra: { c: 3 },
-        missing: {},
-        failures: {},
-      },
-    }));
+    assertThat(matchesObjectMatcher, matcherFails<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      extra: { c: 3 },
+      missing: {},
+      failures: {},
+    }).given(actual));
   });
 
   it("fails if there are any missing keys", () => {
@@ -105,18 +105,13 @@ describe("MatchesObject", () => {
       c: cMatcher,
     });
 
-    const result = matchesObjectMatcher.match(actual);
+    assertThat(matchesObjectMatcher, matcherFails<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      extra: {},
+      missing: { c: "c expected" },
+      failures: {},
+    }).given(actual));
 
-    assertThat(result, equalTo({
-      matches: false as false,
-      data: {
-        extra: {},
-        missing: { c: "c expected" },
-        failures: {},
-      },
-    }));
-
-    assertThat(cMatcher.describeExpectedCalledCount, is(1));
+    assertThat(cMatcher, describeExpectedCalled<number | undefined>().times(1));
   });
 
   it("describes expected", () => {
@@ -134,18 +129,15 @@ describe("MatchesObject", () => {
       b: bMatcher,
     });
 
-    assertThat(
-      matchesObjectMatcher.describeExpected(),
-      is(
-        `{${EOL}` +
-        `  a: a value for a,${EOL}` +
-        `  b: a value for b${EOL}` +
-        `}`,
-      ),
-    );
+    assertThat(matchesObjectMatcher, matcherDescribesExpectedAs(
+      `{${EOL}` +
+      `  a: a value for a,${EOL}` +
+      `  b: a value for b${EOL}` +
+      `}`,
+    ));
 
-    assertThat(aMatcher.describeExpectedCalledCount, is(1));
-    assertThat(bMatcher.describeExpectedCalledCount, is(1));
+    assertThat(aMatcher, describeExpectedCalled().times(1));
+    assertThat(bMatcher, describeExpectedCalled().times(1));
   });
 
   it("describes the actual by printing the value", () => {
@@ -159,20 +151,18 @@ describe("MatchesObject", () => {
       b: bMatcher,
     });
 
-    assertThat(
-      matchesObjectMatcher.describeActual(actual),
-      is(
-        `{${EOL}` +
-        `  a: 1,${EOL}` +
-        `  b: 2${EOL}` +
-        `}`,
-      ),
-    );
-    assertThat(aMatcher.describeActualCalledCount, is(0));
-    assertThat(bMatcher.describeActualCalledCount, is(0));
+    assertThat(matchesObjectMatcher, matcherDescribesActualAs(
+      `{${EOL}` +
+      `  a: 1,${EOL}` +
+      `  b: 2${EOL}` +
+      `}`,
+    ).given(actual));
+
+    assertThat(aMatcher, describeActualNotCalled());
+    assertThat(bMatcher, describeActualNotCalled());
   });
 
-  it("describes data", () => {
+  it("describes extra lines", () => {
     const aMatcher = MockMatcher.matches();
     const bMatcher = MockMatcher.matches();
 
@@ -181,17 +171,13 @@ describe("MatchesObject", () => {
       b: bMatcher,
     });
 
-    const builder = new DescriptionBuilder("expected", "actual");
-
     const data = {
       extra: { a: 1 },
       missing: { b: "expected value for b" },
       failures: { c: "actual value for c" },
     };
 
-    matchesObjectMatcher.describeResult(data, builder);
-
-    assertThat(builder.extraLines, equalTo([
+    assertThat(matchesObjectMatcher, describesExtraLinesAs([
       {
         label: "failures",
         value: "{ c: actual value for c }",
@@ -204,7 +190,7 @@ describe("MatchesObject", () => {
         label: "extra",
         value: "{ a: 1 }",
       },
-    ]));
+    ]).given(data));
   });
 })
 ;

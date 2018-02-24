@@ -1,7 +1,14 @@
 import { EOL } from "os";
 
-import { anything, assertThat, containsObject, DescriptionBuilder, equalTo, is } from "../../src";
-import { MockMatcher } from "../MockMatcher";
+import { assertThat, containsObject } from "../../src";
+import {
+  describesExtraLinesAs,
+  matcherDescribesActualAs,
+  matcherDescribesExpectedAs, matcherFails,
+  matcherMatches,
+} from "../../src/MatcherMatchers";
+import { ObjectDifferenceAnalysis } from "../../src/matchers/ContainsObject";
+import { MockMatcher } from "../../src/MockMatcher";
 
 describe("ContainsObject", () => {
   type O = {
@@ -17,32 +24,23 @@ describe("ContainsObject", () => {
       a: MockMatcher.matches(),
       b: MockMatcher.matches(),
     });
-    const result = containsObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({
-      matches: true,
-      data: {
-        failures: {},
-        missing: {},
-      },
-    }));
+    assertThat(containsObjectMatcher, matcherMatches<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      failures: {},
+      missing: {},
+    }).given(actual));
   });
 
   it("matches only given property matchers for some of the required properties of the object", () => {
     const actual: O = { a: 1, b: 2 };
-
     const containsObjectMatcher = containsObject<O>({
       a: MockMatcher.matches(),
     });
-    const result = containsObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({
-      matches: true,
-      data: {
-        failures: {},
-        missing: {},
-      },
-    }));
+    assertThat(containsObjectMatcher, matcherMatches<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      failures: {},
+      missing: {},
+    }).given(actual));
   });
 
   it("fails when a property is missing", () => {
@@ -56,17 +54,13 @@ describe("ContainsObject", () => {
         .setExpected("expected for c")
         .build(),
     });
-    const result = containsObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({
-      matches: false,
-      data: {
-        failures: {},
-        missing: {
-          c: "expected for c",
-        },
+    assertThat(containsObjectMatcher, matcherFails<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      failures: {},
+      missing: {
+        c: "expected for c",
       },
-    }));
+    }).given(actual));
   });
 
   it("matches when all the property matchers match", () => {
@@ -79,19 +73,11 @@ describe("ContainsObject", () => {
       a: aMatcher,
       b: bMatcher,
     });
-    const result = containsObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({
-      matches: true,
-      data: {
-        failures: {},
-        missing: {},
-      },
-    }));
-    assertThat(aMatcher.matchCalledCount, is(1));
-    assertThat(aMatcher.matchActual, is(1));
-    assertThat(bMatcher.matchCalledCount, is(1));
-    assertThat(bMatcher.matchActual, is(2));
+    assertThat(containsObjectMatcher, matcherMatches<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      failures: {},
+      missing: {},
+    }).given(actual));
   });
 
   it("fails when one property matcher fails", () => {
@@ -106,90 +92,79 @@ describe("ContainsObject", () => {
       .setExpected("a2")
       .setActual("b2")
       .build();
-
     const containsObjectMatcher = containsObject<O>({
       a: aMatcher,
       b: bMatcher,
     });
-    const result = containsObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({
-      matches: false,
-      data: {
-        failures: {
-          a: "b1",
-        },
-        missing: {},
+    assertThat(containsObjectMatcher, matcherFails<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      failures: {
+        a: "b1",
       },
-    }));
-    assertThat(aMatcher.matchCalledCount, is(1));
-    assertThat(aMatcher.matchActual, is(1));
-    assertThat(bMatcher.matchCalledCount, is(1));
+      missing: {},
+    }).given(actual));
   });
 
   it("does not fail if there are extra keys", () => {
     const actual: O = { a: 1, b: 2, c: 3 };
-
     const containsObjectMatcher = containsObject<O>({
-      a: equalTo(1),
-      b: equalTo(2),
+      a: MockMatcher.matches(),
+      b: MockMatcher.matches(),
     });
-    const result = containsObjectMatcher.match(actual);
 
-    assertThat(result, equalTo({
-      matches: true,
-      data: {
-        failures: {},
-        missing: {},
-      },
-    }));
+    assertThat(containsObjectMatcher, matcherMatches<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
+      failures: {},
+      missing: {},
+    }).given(actual));
   });
 
   it("describes expected with an empty object", () => {
     const containsObjectMatcher = containsObject({});
 
-    assertThat(containsObjectMatcher.describeExpected(), is(
+    assertThat(containsObjectMatcher, matcherDescribesExpectedAs(
       `an object containing:${EOL}` +
       `{  }`,
     ));
   });
 
   it("describes expected with one property", () => {
-    const containsObjectMatcher = containsObject({ a: anything() });
+    const containsObjectMatcher = containsObject({
+      a: MockMatcher.builder().setExpected("expected a").build(),
+    });
 
-    assertThat(containsObjectMatcher.describeExpected(), is(
+    assertThat(containsObjectMatcher, matcherDescribesExpectedAs(
       `an object containing:${EOL}` +
-      `{ a: anything }`,
+      `{ a: expected a }`,
     ));
   });
 
   it("describes expected with multiple properties", () => {
     const containsObjectMatcher = containsObject({
-      a: anything(),
-      b: equalTo(1),
+      a: MockMatcher.builder().setExpected("expected a").build(),
+      b: MockMatcher.builder().setExpected("expected b").build(),
     });
 
-    assertThat(containsObjectMatcher.describeExpected(), is(
+    assertThat(containsObjectMatcher, matcherDescribesExpectedAs(
       `an object containing:${EOL}` +
       `{${EOL}` +
-      `  a: anything,${EOL}` +
-      `  b: 1${EOL}` +
+      `  a: expected a,${EOL}` +
+      `  b: expected b${EOL}` +
       `}`,
     ));
   });
 
   it("describes actual by printing the value", () => {
     const containsObjectMatcher = containsObject({
-      a: anything(),
-      b: equalTo(1),
+      a: MockMatcher.matches(),
+      b: MockMatcher.matches(),
     });
 
-    assertThat(containsObjectMatcher.describeActual({ a: 2, b: 1 }), is(
+    assertThat(containsObjectMatcher, matcherDescribesActualAs(
       `{${EOL}` +
       `  a: 2,${EOL}` +
       `  b: 1${EOL}` +
       `}`,
-    ));
+    ).given(({ a: 2, b: 1 })));
   });
 
   it("describes data", () => {
@@ -201,16 +176,12 @@ describe("ContainsObject", () => {
       b: bMatcher,
     });
 
-    const builder = new DescriptionBuilder("expected", "actual");
-
     const data = {
       missing: { b: "expected value for b" },
       failures: { c: "actual value for c" },
     };
 
-    containsObjectMatcher.describeResult(data, builder);
-
-    assertThat(builder.extraLines, equalTo([
+    assertThat(containsObjectMatcher, describesExtraLinesAs([
       {
         label: "failures",
         value: "{ c: actual value for c }",
@@ -219,6 +190,6 @@ describe("ContainsObject", () => {
         label: "missing",
         value: "{ b: expected value for b }",
       },
-    ]));
+    ]).given(data));
   });
 });

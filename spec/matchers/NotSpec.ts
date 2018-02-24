@@ -1,9 +1,15 @@
-import { assertThat, equalTo, is, not } from "../../src";
-import { MockMatcher } from "../MockMatcher";
+import { assertThat, not } from "../../src";
+import {
+  matcherDescribesActualAs,
+  matcherDescribesExpectedAs,
+  matcherFails,
+  matcherMatches,
+} from "../../src/MatcherMatchers";
+import { matchCalled, MockMatcher } from "../../src/MockMatcher";
 
 describe("Not", () => {
   it("matches when the given matcher fails", () => {
-    const wrappedMatcher = MockMatcher.builder()
+    const wrappedMatcher = MockMatcher.builder<string, string>()
       .setMatches(false)
       .setDiff({
         expected: 1,
@@ -13,16 +19,13 @@ describe("Not", () => {
       .build();
     const matcher = not(wrappedMatcher);
 
-    const result = matcher.match("actual");
+    assertThat(matcher, matcherMatches().given("actual"));
 
-    assertThat(result, equalTo({ matches: true }));
-
-    assertThat(wrappedMatcher.matchCalledCount, is(1));
-    assertThat(wrappedMatcher.matchActual, is("actual"));
+    assertThat(wrappedMatcher, matchCalled().with("actual").times(1));
   });
 
   it("fails when the given matcher matches", () => {
-    const wrappedMatcher = MockMatcher.builder()
+    const wrappedMatcher = MockMatcher.builder<string, string>()
       .setMatches(true)
       .setDiff({
         expected: 1,
@@ -32,9 +35,7 @@ describe("Not", () => {
       .build();
     const matcher = not(wrappedMatcher);
 
-    const result = matcher.match("actual");
-
-    assertThat(result, equalTo({ matches: false }));
+    assertThat(matcher, matcherFails().given("actual"));
   });
 
   it("describes the expected", () => {
@@ -43,7 +44,7 @@ describe("Not", () => {
       .build();
     const matcher = not(wrappedMatcher);
 
-    assertThat(matcher.describeExpected(), is("not wrapped expected"));
+    assertThat(matcher, matcherDescribesExpectedAs("not wrapped expected"));
   });
 
   it("describes the actual", () => {
@@ -52,6 +53,6 @@ describe("Not", () => {
       .build();
     const matcher = not(wrappedMatcher);
 
-    assertThat(matcher.describeActual("actual"), is("wrapped actual"));
+    assertThat(matcher, matcherDescribesActualAs("wrapped actual").given("actual"));
   });
 });

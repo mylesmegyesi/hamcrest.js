@@ -1,40 +1,36 @@
-import { assertThat, equalTo, is, isFalse } from "../../src";
+import { assertThat, isFalse } from "../../src";
+import {
+  matcherDescribesActualAs,
+  matcherDescribesExpectedAs,
+  matcherFails,
+  matcherMatches,
+} from "../../src/MatcherMatchers";
 
 describe("IsFalse", () => {
   it("matches when the actual is false", () => {
-    const result = isFalse().match(false);
-
-    assertThat(result, equalTo({
-      matches: true,
-      diff: {
-        expected: false,
-        actual: false,
-      },
-    }));
+    assertThat(isFalse(), matcherMatches().andReturnsDiff({
+      expected: false,
+      actual: false,
+    }).given(false));
   });
 
   it("fails when the actual is false", () => {
-    const result = isFalse().match(true);
-
-    assertThat(result, equalTo({
-      matches: false,
-      diff: {
-        expected: false,
-        actual: true,
-      },
-    }));
+    assertThat(isFalse(), matcherFails().andReturnsDiff({
+      expected: false,
+      actual: true,
+    }).given(true));
   });
 
   it("describes expected", () => {
     const matcher = isFalse();
 
-    assertThat(matcher.describeExpected(), is("false"));
+    assertThat(matcher, matcherDescribesExpectedAs("false"));
   });
 
   it("describes the actual by printing the value", () => {
     const matcher = isFalse();
 
-    assertThat(matcher.describeActual(false), is("false"));
-    assertThat(matcher.describeActual(true), is("true"));
+    assertThat(matcher, matcherDescribesActualAs("false").given(false));
+    assertThat(matcher, matcherDescribesActualAs("true").given(true));
   });
 });

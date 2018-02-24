@@ -2,10 +2,10 @@ import { DescriptionBuilder } from "../Description";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
 
-class Not<T> implements Matcher<T> {
-  public constructor(private matcher: Matcher<T>) {}
+class Not<T> implements Matcher<T, never> {
+  public constructor(private matcher: Matcher<T, any>) {}
 
-  public match(actual: T): MatchResult {
+  public match(actual: T): MatchResult<never> {
     const result = this.matcher.match(actual);
     return { matches: !result.matches };
   }
@@ -21,6 +21,6 @@ class Not<T> implements Matcher<T> {
   public describeResult(data: any, builder: DescriptionBuilder): void {}
 }
 
-export function not<T>(matcher: Matcher<T>): Matcher<T> {
+export function not<T>(matcher: Matcher<T, any>): Matcher<T, never> {
   return new Not(matcher);
 }

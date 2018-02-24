@@ -3,7 +3,7 @@ import { EOL } from "os";
 
 import { AssertionError, assertThat } from "../src";
 
-import { MockMatcher } from "./MockMatcher";
+import { MockMatcher } from "../src/MockMatcher";
 
 describe("MatcherAssert", () => {
   it("assertThat does nothing when the matcher matches", () => {
@@ -15,7 +15,7 @@ describe("MatcherAssert", () => {
 
     assertThat(1, matcher);
 
-    assert.equal(matcher.matchActual, 1);
+    assert.deepEqual(matcher.matchArguments, { actual: 1 });
     assert.equal(matcher.matchCalledCount, 1);
   });
 

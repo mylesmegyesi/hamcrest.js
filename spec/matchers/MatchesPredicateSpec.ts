@@ -1,52 +1,56 @@
-import * as sinon from "sinon";
+import * as assert from "assert";
 
-import { assertThat, equalTo, is, isTrue, matches } from "../../src";
+import { assertThat, matches } from "../../src";
+import {
+  matcherDescribesActualAs,
+  matcherDescribesExpectedAs,
+  matcherFails,
+  matcherMatches,
+} from "../../src/MatcherMatchers";
 
 describe("MatchesPredicate", () => {
   it("matches if the given predicate returns true", () => {
-    const expected = "something";
-    const actual = "something else";
-    const test = sinon.stub().returns(true);
-    const matcher = matches<string, string>(expected, test);
+    let callCount = 0;
+    let receivedExpectedValue = null;
+    let receivedActualValue = null;
+    const test = (expected: number, actual: number): boolean => {
+      callCount += 1;
+      receivedExpectedValue = expected;
+      receivedActualValue = actual;
+      return true;
+    };
+    const matcher = matches<number, number>(1, test);
 
-    const result = matcher.match(actual);
+    assertThat(matcher, matcherMatches().andReturnsDiff({
+      expected: 1,
+      actual: 2,
+    }).given(2));
 
-    assertThat(result, equalTo({
-      matches: true,
-      diff: {
-        expected,
-        actual,
-      },
-    }));
-    assertThat(test.calledOnce, isTrue());
-    assertThat(test.calledWithExactly(expected, actual), isTrue());
+    assert.equal(callCount, 1);
+    assert.equal(receivedExpectedValue, 1);
+    assert.equal(receivedActualValue, 2);
   });
 
   it("fails if the given equality tester returns false", () => {
-    const expected = "something";
-    const test = sinon.stub().returns(false);
+    const test = (_1: number, _2: number): boolean => false;
 
-    const matcher = matches<string, string>(expected, test);
-    const result = matcher.match(expected);
+    const matcher = matches<number, number>(1, test);
 
-    assertThat(result, equalTo({
-      matches: false,
-      diff: {
-        expected,
-        actual: expected,
-      },
-    }));
+    assertThat(matcher, matcherFails().andReturnsDiff({
+      expected: 1,
+      actual: 2,
+    }).given(2));
   });
 
   it("describes the expected by printing the value", () => {
     const matcher = matches<string, string>("something", (e, a) => true);
 
-    assertThat(matcher.describeExpected(), is("\"something\""));
+    assertThat(matcher, matcherDescribesExpectedAs("\"something\""));
   });
 
   it("describes the actual by printing the value", () => {
     const matcher = matches<string, string>("something", (e, a) => true);
 
-    assertThat(matcher.describeActual("something else"), is("\"something else\""));
+    assertThat(matcher, matcherDescribesActualAs("\"something else\"").given("something else"));
   });
 });
