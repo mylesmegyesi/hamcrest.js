@@ -50,11 +50,14 @@ function formatArrayMultipleLines(printedItems: string[]): string {
   return formatMultiLineEntity(LEFT_BRACKET, printedItems, RIGHT_BRACKET);
 }
 
-export function printArray<T>(items: T[], printItem: Print<T>): string {
-  const printedItems = items.map(printItem);
-  const anyMultiLineItems = printedItems.some(isMultiLine);
+export function printArray<T>(items: Iterable<T>, printItem: Print<T>, forceMultiLine: boolean = false): string {
+  const printedItems: string[] = [];
 
-  if (anyMultiLineItems) {
+  for (const item of items) {
+    printedItems.push(printItem(item));
+  }
+
+  if (forceMultiLine || printedItems.some(isMultiLine)) {
     return formatArrayMultipleLines(printedItems);
   } else {
     const singleLineArray = formatArraySingleLine(printedItems);
@@ -76,7 +79,7 @@ function formatObjectMultipleLines(printedItems: string[]): string {
 
 export type ObjectPrinters<T> = {
   [P in keyof T]: Print<T[P]>
-};
+  };
 
 export function printObjectItems<T>(obj: T, printers: ObjectPrinters<T>): string[] {
   const lines: string[] = [];
@@ -94,10 +97,10 @@ export function printObjectItems<T>(obj: T, printers: ObjectPrinters<T>): string
   return lines;
 }
 
-export function printObject<T>(obj: T, printers: ObjectPrinters<T>): string {
+export function printObject<T>(obj: T, printers: ObjectPrinters<T>, forceMultiLine: boolean = false): string {
   const printedItems: string[] = printObjectItems(obj, printers);
 
-  if (printedItems.length > 1 || printedItems.some(isMultiLine)) {
+  if (forceMultiLine || printedItems.length > 1 || printedItems.some(isMultiLine)) {
     return formatObjectMultipleLines(printedItems);
   } else {
     const singleLineObject = formatObjectSingleLine(printedItems);

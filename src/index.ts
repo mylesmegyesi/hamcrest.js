@@ -9,6 +9,7 @@ export { allOf } from "./matchers/AllOf";
 export { anyOf } from "./matchers/AnyOf";
 export { anything } from "./matchers/Anything";
 export { containsObject } from "./matchers/ContainsObject";
+export { contains } from "./matchers/Contains";
 export { equalTo } from "./matchers/EqualTo";
 export { matches, MatcherPredicate } from "./matchers/MatchesPredicate";
 export { hasProperty } from "./matchers/HasProperty";

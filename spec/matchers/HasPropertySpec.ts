@@ -59,7 +59,7 @@ describe("HasProperty", () => {
 
     assertThat(hasPropertyMatcher, matcherMatches().given(actual));
 
-    assertThat(valueMatcher, matchCalled<number | undefined>().with(2).times(1));
+    assertThat(valueMatcher, matchCalled<number | undefined>({ actual: 2 }));
   });
 
   it("fails if the object does not have the property", () => {

@@ -15,8 +15,7 @@ describe("MatcherAssert", () => {
 
     assertThat(1, matcher);
 
-    assert.deepEqual(matcher.matchArguments, { actual: 1 });
-    assert.equal(matcher.matchCalledCount, 1);
+    assert.deepEqual(matcher.matchInvocations, [{ actual: 1 }]);
   });
 
   it("assertThat throws when the match fails", () => {
@@ -35,7 +34,7 @@ describe("MatcherAssert", () => {
       assert.equal(e.showDiff, false);
       assert.equal(e.expected, undefined);
       assert.equal(e.actual, undefined);
-      assert.equal(matcher.matchCalledCount, 1);
+      assert.equal(matcher.matchInvocations.length, 1);
     });
   });
 

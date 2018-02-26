@@ -73,7 +73,7 @@ describe("IsPresent", () => {
   });
 
   it("describes the actual given a value matcher", () => {
-    const valueMatcher = MockMatcher.builder()
+    const valueMatcher = MockMatcher.builder<number>()
       .setActual("actual value")
       .build();
     const matcher = isPresent<number>(valueMatcher);
@@ -82,6 +82,6 @@ describe("IsPresent", () => {
     assertThat(matcher, matcherDescribesActualAs<number | null>("null").given(null));
     assertThat(matcher, matcherDescribesActualAs<number | undefined>("undefined").given(undefined));
 
-    assertThat(valueMatcher, describeActualCalled().with(1).times(1));
+    assertThat(valueMatcher, describeActualCalled({ actual: 1, data: undefined }));
   });
 });
