@@ -12,8 +12,8 @@ describe("Not", () => {
     const wrappedMatcher = MockMatcher.builder<string, string>()
       .setMatches(false)
       .setDiff({
-        expected: 1,
         actual: 2,
+        expected: 1,
       })
       .setData("data")
       .build();
@@ -28,8 +28,8 @@ describe("Not", () => {
     const wrappedMatcher = MockMatcher.builder<string, string>()
       .setMatches(true)
       .setDiff({
-        expected: 1,
         actual: 2,
+        expected: 1,
       })
       .setData("data")
       .build();

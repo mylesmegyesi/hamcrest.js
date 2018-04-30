@@ -1,9 +1,12 @@
-import valueIsEqual = require("lodash.isequal");
 import { EOL } from "os";
 
-import { DescriptionBuilder, Diff, Matcher, MatchResult, MatchResultBuilder, printValue } from ".";
+import isEqual from "lodash.isequal";
+
 import { BaseMatcher } from "./BaseMatcher";
-import { printArray } from "./Printing";
+import { DescriptionBuilder } from "./Description";
+import { Matcher } from "./Matcher";
+import { Diff, MatchResult, MatchResultBuilder } from "./MatchResult";
+import { printArray, printValue } from "./Printing";
 
 export type MatchArguments<A> = {
   actual: A;
@@ -74,15 +77,28 @@ export class MockMatcher<A, T> implements Matcher<A, T> {
       .build();
   }
 
-  private _matchInvocations: MatchArguments<A>[] = [];
   private _describeExpectedCalledCount: number = 0;
-  private _describeActualInvocations: DescribeActualArguments<A, T>[] = [];
+  private readonly _actualDescription: string;
+  private readonly _data?: T;
+  private readonly _describeActualInvocations: DescribeActualArguments<A, T>[] = [];
+  private readonly _diff?: Diff;
+  private readonly _expectedDescription: string;
+  private readonly _matchInvocations: MatchArguments<A>[] = [];
+  private readonly _matchesTest?: (actual: A) => boolean;
 
-  public constructor(private readonly _expectedDescription: string,
-                     private readonly _actualDescription: string,
-                     private readonly _matchesTest?: (actual: A) => boolean,
-                     private readonly _diff?: Diff,
-                     private readonly _data?: T) {}
+  public constructor(
+    expectedDescription: string,
+    actualDescription: string,
+    matchesTest?: (actual: A) => boolean,
+    diff?: Diff,
+    data?: T,
+  ) {
+    this._expectedDescription = expectedDescription;
+    this._actualDescription = actualDescription;
+    this._matchesTest = matchesTest;
+    this._diff = diff;
+    this._data = data;
+  }
 
   public get matchInvocations(): ReadonlyArray<MatchArguments<A>> {
     return this._matchInvocations;
@@ -123,21 +139,29 @@ export class MockMatcher<A, T> implements Matcher<A, T> {
   public describeResult(_data: T, _builder: DescriptionBuilder): void {}
 }
 
-function printInvocations<TArgs>(invocations: ReadonlyArray<TArgs>): string {
-  return printArray(invocations, printValue, true);
-}
+const printInvocations = <TArgs>(invocations: ReadonlyArray<TArgs>): string =>
+  printArray<TArgs>(invocations, printValue, true);
 
 class InvocationMatcher<A, TArgs> extends BaseMatcher<MockMatcher<A, any>, never> {
-  public constructor(private readonly _methodName: string,
-                     private readonly _getActualInvocations: (matcher: MockMatcher<A, any>) => ReadonlyArray<TArgs>,
-                     private readonly _expectedInvocations: ReadonlyArray<TArgs>) {
+  private readonly _methodName: string;
+  private readonly _getActualInvocations: (matcher: MockMatcher<A, any>) => ReadonlyArray<TArgs>;
+  private readonly _expectedInvocations: ReadonlyArray<TArgs>;
+
+  public constructor(
+    methodName: string,
+    getActualInvocations: (matcher: MockMatcher<A, any>) => ReadonlyArray<TArgs>,
+    expectedInvocations: ReadonlyArray<TArgs>,
+  ) {
     super();
+    this._methodName = methodName;
+    this._getActualInvocations = getActualInvocations;
+    this._expectedInvocations = expectedInvocations;
   }
 
   public match(matcher: MockMatcher<A, any>): MatchResult<never> {
     const actual = this._getActualInvocations(matcher);
     return {
-      matches: valueIsEqual(actual, this._expectedInvocations),
+      matches: isEqual(actual, this._expectedInvocations),
       diff: {
         expected: this._expectedInvocations,
         actual,
@@ -156,7 +180,7 @@ class InvocationMatcher<A, TArgs> extends BaseMatcher<MockMatcher<A, any>, never
   public describeActual(matcher: MockMatcher<A, any>, data: never): string {
     const actualInvocations = this._getActualInvocations(matcher);
     if (actualInvocations.length === 0) {
-      return `was not called`;
+      return "was not called";
     }
 
     return `was called with:${EOL}${printInvocations(actualInvocations)}`;
@@ -164,10 +188,19 @@ class InvocationMatcher<A, TArgs> extends BaseMatcher<MockMatcher<A, any>, never
 }
 
 class InvocationsCountMatcher<A> extends BaseMatcher<MockMatcher<A, any>, never> {
-  public constructor(private readonly _methodName: string,
-                     private readonly _getActualCallCount: (matcher: MockMatcher<A, any>) => number,
-                     private readonly _expectedCallCount: number) {
+  private readonly _methodName: string;
+  private readonly _getActualCallCount: (matcher: MockMatcher<A, any>) => number;
+  private readonly _expectedCallCount: number;
+
+  public constructor(
+    methodName: string,
+    getActualCallCount: (matcher: MockMatcher<A, any>) => number,
+    expectedCallCount: number,
+  ) {
     super();
+    this._methodName = methodName;
+    this._getActualCallCount = getActualCallCount;
+    this._expectedCallCount = expectedCallCount;
   }
 
   public match(matcher: MockMatcher<A, any>): MatchResult<never> {
@@ -192,53 +225,41 @@ class InvocationsCountMatcher<A> extends BaseMatcher<MockMatcher<A, any>, never>
   public describeActual(matcher: MockMatcher<A, any>, data: never): string {
     const actualCallCount = this._getActualCallCount(matcher);
     if (actualCallCount === 0) {
-      return `was not called`;
+      return "was not called";
     }
 
     return `was called ${actualCallCount} times`;
   }
 }
 
-function buildMatchInvocationMatcher<A>(expectedInvocations: ReadonlyArray<MatchArguments<A>>): Matcher<MockMatcher<A, any>, never> {
-  return new InvocationMatcher<A, MatchArguments<A>>(
+const buildMatchInvocationMatcher = <A>(expectedInvocations: ReadonlyArray<MatchArguments<A>>): Matcher<MockMatcher<A, any>, never> =>
+  new InvocationMatcher<A, MatchArguments<A>>(
     "match",
     mockMatcher => mockMatcher.matchInvocations,
     expectedInvocations,
   );
-}
 
-export function matchCalled<A>(...invocations: MatchArguments<A>[]): Matcher<MockMatcher<A, any>, never> {
-  return buildMatchInvocationMatcher(invocations);
-}
+export const matchCalled = <A>(...invocations: MatchArguments<A>[]): Matcher<MockMatcher<A, any>, never> => buildMatchInvocationMatcher<A>(invocations);
 
-export function matchNotCalled<A>(): Matcher<MockMatcher<A, any>, never> {
-  return buildMatchInvocationMatcher([]);
-}
+export const matchNotCalled = <A>(): Matcher<MockMatcher<A, any>, never> => buildMatchInvocationMatcher<A>([]);
 
-function buildDescribeExpectedInvocationMatcher<A>(expectedCallCount: number): Matcher<MockMatcher<A, any>, never> {
-  return new InvocationsCountMatcher<A>(
+const buildDescribeExpectedInvocationMatcher = <A>(expectedCallCount: number): Matcher<MockMatcher<A, any>, never> =>
+  new InvocationsCountMatcher<A>(
     "describeExpected",
     mockMatcher => mockMatcher.describeExpectedCalledCount,
     expectedCallCount,
   );
-}
 
-export function describeExpectedCalled<A>(times: number = 1): Matcher<MockMatcher<A, any>, never> {
-  return buildDescribeExpectedInvocationMatcher(times);
-}
+export const describeExpectedCalled = buildDescribeExpectedInvocationMatcher;
 
-function buildDescribeActualInvocationMatcher<A, T>(expectedInvocations: ReadonlyArray<DescribeActualArguments<A, T>>): Matcher<MockMatcher<A, any>, never> {
-  return new InvocationMatcher<A, DescribeActualArguments<A, T>>(
+const buildDescribeActualInvocationMatcher = <A, T>(expectedInvocations: ReadonlyArray<DescribeActualArguments<A, T>>): Matcher<MockMatcher<A, any>, never> =>
+  new InvocationMatcher<A, DescribeActualArguments<A, T>>(
     "describeActual",
     mockMatcher => mockMatcher.describeActualInvocations,
     expectedInvocations,
   );
-}
 
-export function describeActualNotCalled<A, T>(): Matcher<MockMatcher<A, T>, never> {
-  return buildDescribeActualInvocationMatcher([]);
-}
+export const describeActualNotCalled = <A, T>(): Matcher<MockMatcher<A, T>, never> => buildDescribeActualInvocationMatcher<A, T>([]);
 
-export function describeActualCalled<A, T>(...invocations: DescribeActualArguments<A, T>[]): Matcher<MockMatcher<A, T>, never> {
-  return buildDescribeActualInvocationMatcher(invocations);
-}
+export const describeActualCalled = <A, T>(...invocations: DescribeActualArguments<A, T>[]): Matcher<MockMatcher<A, T>, never> =>
+  buildDescribeActualInvocationMatcher<A, T>(invocations);

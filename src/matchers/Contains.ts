@@ -6,12 +6,15 @@ import { MatchResult } from "../MatchResult";
 import { printArray, printValue } from "../Printing";
 
 class ContainsMatcher<T> extends BaseMatcher<Iterable<T>, never> {
-  public constructor(private matchers: ReadonlyArray<Matcher<T, any>>) {
+  private readonly _matchers: ReadonlyArray<Matcher<T, any>>;
+
+  public constructor(matchers: ReadonlyArray<Matcher<T, any>>) {
     super();
+    this._matchers = matchers;
   }
 
   public match(actual: Iterable<T>): MatchResult<never> {
-    const unmatched = this.matchers.slice(0);
+    const unmatched = this._matchers.slice(0);
 
     for (const item of actual) {
       for (const [i, matcher] of unmatched.entries()) {
@@ -31,7 +34,7 @@ class ContainsMatcher<T> extends BaseMatcher<Iterable<T>, never> {
 
   public describeExpected(): string {
     const matcherDescriptions = printArray(
-      this.matchers,
+      this._matchers,
       matcher => matcher.describeExpected(),
       true,
     );
@@ -44,6 +47,4 @@ class ContainsMatcher<T> extends BaseMatcher<Iterable<T>, never> {
   }
 }
 
-export function contains<T>(...matchers: Matcher<T, any>[]): Matcher<Iterable<T>, never> {
-  return new ContainsMatcher<T>(matchers);
-}
+export const contains = <T>(...matchers: Matcher<T, any>[]): Matcher<Iterable<T>, never> => new ContainsMatcher<T>(matchers);

@@ -12,8 +12,8 @@ describe("StrictlyEqualTo", () => {
     const matcher = strictlyEqualTo(value);
 
     assertThat(matcher, matcherMatches().andReturnsDiff({
-      expected: value,
       actual: value,
+      expected: value,
     }).given(value));
   });
 
@@ -23,8 +23,8 @@ describe("StrictlyEqualTo", () => {
     const matcher = strictlyEqualTo(expected);
 
     assertThat(matcher, matcherFails().andReturnsDiff({
-      expected,
       actual,
+      expected,
     }).given(actual));
   });
 

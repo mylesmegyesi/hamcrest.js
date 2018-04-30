@@ -1,15 +1,21 @@
-import valueEquals = require("lodash.isequal");
 import { EOL } from "os";
 
-import { Diff, Matcher, MatchResult, MatchResultBuilder, printValue } from ".";
+import isEqual from "lodash.isequal";
+
 import { BaseMatcher } from "./BaseMatcher";
 import { DescriptionBuilder, DescriptionLine } from "./Description";
+import { Matcher } from "./Matcher";
+import { Diff, MatchResult, MatchResultBuilder } from "./MatchResult";
+import { printValue } from "./Printing";
 
 export class MatcherMatchesBuilder<A, T> {
-  private _expectedDiff: Diff | undefined;
   private _expectedData: T | undefined;
+  private _expectedDiff: Diff | undefined;
+  private readonly _expectedMatch: boolean;
 
-  public constructor(private readonly _expectedMatch: boolean) {}
+  public constructor(expectedMatch: boolean) {
+    this._expectedMatch = expectedMatch;
+  }
 
   public given(actual: A): Matcher<Matcher<A, T>, MatchResult<T>> {
     // tslint:disable-next-line no-use-before-declare //
@@ -33,16 +39,20 @@ export class MatcherMatchesBuilder<A, T> {
 }
 
 class MatcherMatches<A, T> extends BaseMatcher<Matcher<A, T>, MatchResult<T>> {
-  public constructor(private readonly _actual: A,
-                     private readonly _expectedResult: MatchResult<T>) {
+  private readonly _actual: A;
+  private readonly _expectedResult: MatchResult<T>;
+
+  public constructor(actual: A, expectedResult: MatchResult<T>) {
     super();
+    this._actual = actual;
+    this._expectedResult = expectedResult;
   }
 
   public match(matcher: Matcher<A, T>): MatchResult<MatchResult<T>> {
     const result = matcher.match(this._actual);
 
     return {
-      matches: valueEquals(this._expectedResult, result),
+      matches: isEqual(this._expectedResult, result),
       data: result,
       diff: {
         expected: this._expectedResult,
@@ -60,17 +70,16 @@ class MatcherMatches<A, T> extends BaseMatcher<Matcher<A, T>, MatchResult<T>> {
   }
 }
 
-export function matcherMatches<A, T = never>(): MatcherMatchesBuilder<A, T> {
-  return new MatcherMatchesBuilder<A, T>(true);
-}
+export const matcherMatches = <A, T = never>(): MatcherMatchesBuilder<A, T> => new MatcherMatchesBuilder<A, T>(true);
 
-export function matcherFails<A, T = never>(): MatcherMatchesBuilder<A, T> {
-  return new MatcherMatchesBuilder<A, T>(false);
-}
+export const matcherFails = <A, T = never>(): MatcherMatchesBuilder<A, T> => new MatcherMatchesBuilder<A, T>(false);
 
 class MatcherDescribesExpected<A, T> extends BaseMatcher<Matcher<A, T>, string> {
-  public constructor(private readonly _expected: string) {
+  private readonly _expected: string;
+
+  public constructor(expected: string) {
     super();
+    this._expected = expected;
   }
 
   public match(matcher: Matcher<A, T>): MatchResult<string> {
@@ -94,12 +103,15 @@ class MatcherDescribesExpected<A, T> extends BaseMatcher<Matcher<A, T>, string> 
   }
 }
 
-export function matcherDescribesExpectedAs<A, T>(expected: string): Matcher<Matcher<A, T>, string> {
-  return new MatcherDescribesExpected<A, T>(expected);
-}
+export const matcherDescribesExpectedAs = <A, T>(expected: string): Matcher<Matcher<A, T>, string> =>
+  new MatcherDescribesExpected<A, T>(expected);
 
 export class MatcherDescribesActualBuilder<A> {
-  public constructor(private readonly _expected: string) {}
+  private readonly _expected: string;
+
+  public constructor(_expected: string) {
+    this._expected = _expected;
+  }
 
   public given(actual: A): Matcher<Matcher<A, never>, string> {
     // tslint:disable-next-line no-use-before-declare //
@@ -108,10 +120,15 @@ export class MatcherDescribesActualBuilder<A> {
 }
 
 export class MatcherDescribesActual<A, T> extends BaseMatcher<Matcher<A, T>, string> {
-  public constructor(private readonly _actual: A,
-                     private readonly _data: T,
-                     private readonly _expected: string) {
+  private readonly _actual: A;
+  private readonly _data: T;
+  private readonly _expected: string;
+
+  public constructor(actual: A, data: T, expected: string) {
     super();
+    this._actual = actual;
+    this._data = data;
+    this._expected = expected;
   }
 
   public match(matcher: Matcher<A, T>): MatchResult<string> {
@@ -135,14 +152,16 @@ export class MatcherDescribesActual<A, T> extends BaseMatcher<Matcher<A, T>, str
   }
 }
 
-export function matcherDescribesActualAs<A>(expected: string): MatcherDescribesActualBuilder<A> {
-  return new MatcherDescribesActualBuilder<A>(expected);
-}
+export const matcherDescribesActualAs = <A>(expected: string): MatcherDescribesActualBuilder<A> => new MatcherDescribesActualBuilder<A>(expected);
 
 class DescribesExtraLinesMatcher<A, T> extends BaseMatcher<Matcher<A, T>, ReadonlyArray<DescriptionLine>> {
-  public constructor(private readonly _expectedExtraLines: ReadonlyArray<DescriptionLine>,
-                     private readonly _data: T) {
+  private readonly _expectedExtraLines: ReadonlyArray<DescriptionLine>;
+  private readonly _data: T;
+
+  public constructor(_expectedExtraLines: ReadonlyArray<DescriptionLine>, _data: T) {
     super();
+    this._expectedExtraLines = _expectedExtraLines;
+    this._data = _data;
   }
 
   public match(matcher: Matcher<A, T>): MatchResult<ReadonlyArray<DescriptionLine>> {
@@ -150,7 +169,7 @@ class DescribesExtraLinesMatcher<A, T> extends BaseMatcher<Matcher<A, T>, Readon
     matcher.describeResult(this._data, builder);
     const actualExtraLines = builder.extraLines;
     return {
-      matches: valueEquals(this._expectedExtraLines, actualExtraLines),
+      matches: isEqual(this._expectedExtraLines, actualExtraLines),
       data: actualExtraLines,
     };
   }
@@ -165,13 +184,16 @@ class DescribesExtraLinesMatcher<A, T> extends BaseMatcher<Matcher<A, T>, Readon
 }
 
 export class DescribesExtraLinesBuilder<A, T> {
-  public constructor(private readonly _expectedExtraLines: ReadonlyArray<DescriptionLine>) {}
+  private readonly _expectedExtraLines: ReadonlyArray<DescriptionLine>;
+
+  public constructor(expectedExtraLines: ReadonlyArray<DescriptionLine>) {
+    this._expectedExtraLines = expectedExtraLines;
+  }
 
   public given(data: T): Matcher<Matcher<A, T>, ReadonlyArray<DescriptionLine>> {
     return new DescribesExtraLinesMatcher<A, T>(this._expectedExtraLines, data);
   }
 }
 
-export function describesExtraLinesAs<A, T>(expectedExtraLines: ReadonlyArray<DescriptionLine>): DescribesExtraLinesBuilder<A, T> {
-  return new DescribesExtraLinesBuilder<A, T>(expectedExtraLines);
-}
+export const describesExtraLinesAs = <A, T>(expectedExtraLines: ReadonlyArray<DescriptionLine>): DescribesExtraLinesBuilder<A, T> =>
+  new DescribesExtraLinesBuilder<A, T>(expectedExtraLines);

@@ -2,6 +2,4 @@ import { Matcher } from "../Matcher";
 
 import { strictlyEqualTo } from "./StrictlyEqualTo";
 
-export function isTrue(): Matcher<boolean, never> {
-  return strictlyEqualTo(true);
-}
+export const isTrue = (): Matcher<boolean, never> => strictlyEqualTo<boolean>(true);

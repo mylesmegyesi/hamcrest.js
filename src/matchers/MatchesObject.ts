@@ -8,31 +8,37 @@ import { buildObjectDescriptionsPrinter, ObjectDescriptions } from "./ObjectDesc
 import { ObjectMatchers } from "./ObjectMatchers";
 
 export type ObjectDifferenceAnalysis<T> = {
+  extra: Partial<T>;
   failures: Partial<ObjectDescriptions<T>>;
   missing: Partial<ObjectDescriptions<T>>;
-  extra: Partial<T>;
 };
 
 class MatchesObject<T> extends BaseMatcher<T, ObjectDifferenceAnalysis<T>> {
-  private printDescriptions: ObjectPrinters<Partial<ObjectDescriptions<T>>> = buildObjectDescriptionsPrinter<T>();
+  private readonly _expected: ObjectMatchers<T>;
+  private readonly _printDescriptions: ObjectPrinters<Partial<ObjectDescriptions<T>>> = buildObjectDescriptionsPrinter<T>();
 
-  public constructor(private expected: ObjectMatchers<T>) {
+  public constructor(expected: ObjectMatchers<T>) {
     super();
+    this._expected = expected;
   }
 
   public match(actual: T): MatchResult<ObjectDifferenceAnalysis<T>> {
     const failures: Partial<ObjectDescriptions<T>> = {};
     const missing: Partial<ObjectDescriptions<T>> = {};
+    // Object spread does not work with generics yet
+    // tslint:disable-next-line prefer-object-spread
     const extra: T = Object.assign({}, actual);
 
-    for (const key in this.expected) {
-      if (!this.expected.hasOwnProperty(key)) {
+    for (const key in this._expected) {
+      if (!this._expected.hasOwnProperty(key)) {
         continue;
       }
 
-      const propertyMatcher = this.expected[key];
+      const propertyMatcher = this._expected[key];
       const propertyValue = extra[key];
 
+      // `delete` is OK here, mutating a local copy
+      // tslint:disable-next-line no-dynamic-delete
       delete extra[key];
 
       if (!actual.hasOwnProperty(key)) {
@@ -55,26 +61,24 @@ class MatchesObject<T> extends BaseMatcher<T, ObjectDifferenceAnalysis<T>> {
   public describeExpected(): string {
     const expectedDescription: Partial<ObjectDescriptions<T>> = {};
 
-    for (const key in this.expected) {
-      if (!this.expected.hasOwnProperty(key)) {
+    for (const key in this._expected) {
+      if (!this._expected.hasOwnProperty(key)) {
         continue;
       }
 
-      const propertyMatcher = this.expected[key];
+      const propertyMatcher = this._expected[key];
       expectedDescription[key] = propertyMatcher.describeExpected();
     }
 
-    return printObject(expectedDescription, this.printDescriptions);
+    return printObject(expectedDescription, this._printDescriptions);
   }
 
   public describeResult(data: ObjectDifferenceAnalysis<T>, builder: DescriptionBuilder): void {
     builder
-      .addExtraLine("failures", printObject(data.failures, this.printDescriptions))
-      .addExtraLine("missing", printObject(data.missing, this.printDescriptions))
+      .addExtraLine("failures", printObject(data.failures, this._printDescriptions))
+      .addExtraLine("missing", printObject(data.missing, this._printDescriptions))
       .addExtraLine("extra", printValue(data.extra));
   }
 }
 
-export function matchesObject<T>(expected: ObjectMatchers<T>): Matcher<T, ObjectDifferenceAnalysis<T>> {
-  return new MatchesObject<T>(expected);
-}
+export const matchesObject = <T>(expected: ObjectMatchers<T>): Matcher<T, ObjectDifferenceAnalysis<T>> => new MatchesObject<T>(expected);

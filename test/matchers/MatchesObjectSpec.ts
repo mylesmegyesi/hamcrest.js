@@ -37,8 +37,8 @@ describe("MatchesObject", () => {
 
     assertThat(matchesObjectMatcher, matcherMatches<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
       extra: {},
-      missing: {},
       failures: {},
+      missing: {},
     }).given(actual));
 
     assertThat(aMatcher, matchCalled({ actual: 1 }));
@@ -59,8 +59,8 @@ describe("MatchesObject", () => {
 
     assertThat(matchesObjectMatcher, matcherFails<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
       extra: {},
-      missing: {},
       failures: { b: "b actual" },
+      missing: {},
     }).given(actual));
 
     assertThat(bMatcher, describeActualCalled({ actual: 2, data: undefined }));
@@ -82,8 +82,8 @@ describe("MatchesObject", () => {
 
     assertThat(matchesObjectMatcher, matcherFails<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
       extra: { c: 3 },
-      missing: {},
       failures: {},
+      missing: {},
     }).given(actual));
   });
 
@@ -107,8 +107,8 @@ describe("MatchesObject", () => {
 
     assertThat(matchesObjectMatcher, matcherFails<O, ObjectDifferenceAnalysis<O>>().andReturnsData({
       extra: {},
-      missing: { c: "c expected" },
       failures: {},
+      missing: { c: "c expected" },
     }).given(actual));
 
     assertThat(cMatcher, describeExpectedCalled<number | undefined>(1));
@@ -133,7 +133,7 @@ describe("MatchesObject", () => {
       `{${EOL}` +
       `  a: a value for a,${EOL}` +
       `  b: a value for b${EOL}` +
-      `}`,
+      "}",
     ));
 
     assertThat(aMatcher, describeExpectedCalled(1));
@@ -155,7 +155,7 @@ describe("MatchesObject", () => {
       `{${EOL}` +
       `  a: 1,${EOL}` +
       `  b: 2${EOL}` +
-      `}`,
+      "}",
     ).given(actual));
 
     assertThat(aMatcher, describeActualNotCalled());
@@ -173,8 +173,8 @@ describe("MatchesObject", () => {
 
     const data = {
       extra: { a: 1 },
-      missing: { b: "expected value for b" },
       failures: { c: "actual value for c" },
+      missing: { b: "expected value for b" },
     };
 
     assertThat(matchesObjectMatcher, describesExtraLinesAs([

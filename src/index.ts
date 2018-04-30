@@ -1,8 +1,22 @@
 export { DescriptionBuilder } from "./Description";
 export { Matcher } from "./Matcher";
-export { Diff, MatchResult, MatchResultBuilder } from "./MatchResult";
+export { BaseMatcher } from "./BaseMatcher";
+export { Diff, MatchResult } from "./MatchResult";
 export { assertThat, AssertionError } from "./MatcherAssert";
-export * from "./Printing";
+export {
+  Print,
+  arrayPrinter,
+  maybeNullOrUndefinedPrinter,
+  maybeNullPrinter,
+  maybeUndefinedPrinter,
+  objectPrinter,
+  printBoolean,
+  printNull,
+  printNumber,
+  printString,
+  printUndefined,
+  printValue,
+} from "./Printing";
 
 // Matchers
 export { allOf } from "./matchers/AllOf";

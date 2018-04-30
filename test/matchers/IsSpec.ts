@@ -11,8 +11,8 @@ describe("Is", () => {
     const matcher = is(1);
 
     assertThat(matcher, matcherMatches().andReturnsDiff({
-      expected: 1,
       actual: 1,
+      expected: 1,
     }).given(1));
   });
 
@@ -20,8 +20,8 @@ describe("Is", () => {
     const matcher = is(+0);
 
     assertThat(matcher, matcherFails().andReturnsDiff({
-      expected: +0,
       actual: -0,
+      expected: +0,
     }).given(-0));
   });
 

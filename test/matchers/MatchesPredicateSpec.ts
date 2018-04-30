@@ -11,8 +11,8 @@ import {
 describe("MatchesPredicate", () => {
   it("matches if the given predicate returns true", () => {
     let callCount = 0;
-    let receivedExpectedValue = null;
-    let receivedActualValue = null;
+    let receivedExpectedValue;
+    let receivedActualValue;
     const test = (expected: number, actual: number): boolean => {
       callCount += 1;
       receivedExpectedValue = expected;
@@ -22,8 +22,8 @@ describe("MatchesPredicate", () => {
     const matcher = matches<number, number>(1, test);
 
     assertThat(matcher, matcherMatches().andReturnsDiff({
-      expected: 1,
       actual: 2,
+      expected: 1,
     }).given(2));
 
     assert.equal(callCount, 1);
@@ -37,8 +37,8 @@ describe("MatchesPredicate", () => {
     const matcher = matches<number, number>(1, test);
 
     assertThat(matcher, matcherFails().andReturnsDiff({
-      expected: 1,
       actual: 2,
+      expected: 1,
     }).given(2));
   });
 

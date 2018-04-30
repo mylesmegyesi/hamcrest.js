@@ -1,9 +1,12 @@
-import valueIsUndefined = require("lodash.isundefined");
+import isUndefined from "lodash.isundefined";
 
 import { Matcher } from "../Matcher";
 
 import { matches } from "./MatchesPredicate";
 
-export function isUndefined<T>(): Matcher<T | undefined, never> {
-  return matches(undefined, (_, actual) => valueIsUndefined(actual));
-}
+const isUndefinedMatcher = <T>(): Matcher<T | undefined, never> =>
+  matches<undefined, T | undefined>(undefined, (_, actual) => isUndefined(actual));
+
+export {
+  isUndefinedMatcher as isUndefined,
+};

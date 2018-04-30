@@ -4,6 +4,4 @@ import { anyOf } from "./AnyOf";
 import { isNull } from "./IsNull";
 import { isUndefined } from "./IsUndefined";
 
-export function isAbsent<T>(): Matcher<T | null | undefined, never> {
-  return anyOf(isNull(), isUndefined());
-}
+export const isAbsent = <T>(): Matcher<T | null | undefined, never> => anyOf<T>(isNull<T>(), isUndefined<T>());

@@ -123,7 +123,7 @@ describe("ContainsObject", () => {
 
     assertThat(containsObjectMatcher, matcherDescribesExpectedAs(
       `an object containing:${EOL}` +
-      `{  }`,
+      "{  }",
     ));
   });
 
@@ -134,7 +134,7 @@ describe("ContainsObject", () => {
 
     assertThat(containsObjectMatcher, matcherDescribesExpectedAs(
       `an object containing:${EOL}` +
-      `{ a: expected a }`,
+      "{ a: expected a }",
     ));
   });
 
@@ -149,7 +149,7 @@ describe("ContainsObject", () => {
       `{${EOL}` +
       `  a: expected a,${EOL}` +
       `  b: expected b${EOL}` +
-      `}`,
+      "}",
     ));
   });
 
@@ -163,7 +163,7 @@ describe("ContainsObject", () => {
       `{${EOL}` +
       `  a: 2,${EOL}` +
       `  b: 1${EOL}` +
-      `}`,
+      "}",
     ).given(({ a: 2, b: 1 })));
   });
 

@@ -1,5 +1,5 @@
-import valueIsNull = require("lodash.isnull");
-import valueIsUndefined = require("lodash.isundefined");
+import isNull from "lodash.isnull";
+import isUndefined from "lodash.isundefined";
 
 import { BaseMatcher } from "../BaseMatcher";
 import { Matcher } from "../Matcher";
@@ -8,15 +8,15 @@ import { MatchResult } from "../MatchResult";
 import { isAbsent } from "./IsAbsent";
 import { not } from "./Not";
 
-function valueIsPresent<T>(value: T | null | undefined): value is T {
-  return !(valueIsNull(value) || valueIsUndefined(value));
-}
+const valueIsPresent = <T>(value: T | null | undefined): value is T => !(isNull(value) || isUndefined(value));
 
 class IsPresent<T> extends BaseMatcher<T | null | undefined, never> {
-  private readonly notAbsentMatcher: Matcher<T | null | undefined, never> = not(isAbsent<T>());
+  private readonly _notAbsentMatcher: Matcher<T | null | undefined, never> = not<T>(isAbsent<T>());
+  private readonly _valueMatcher?: Matcher<T, any>;
 
-  public constructor(private valueMatcher?: Matcher<T, any>) {
+  public constructor(valueMatcher?: Matcher<T, any>) {
     super();
+    this._valueMatcher = valueMatcher;
   }
 
   public match(actual: T | null | undefined): MatchResult<never> {
@@ -26,8 +26,8 @@ class IsPresent<T> extends BaseMatcher<T | null | undefined, never> {
       };
     }
 
-    if (this.valueMatcher) {
-      return this.valueMatcher.match(actual);
+    if (this._valueMatcher) {
+      return this._valueMatcher.match(actual);
     }
 
     return {
@@ -36,22 +36,20 @@ class IsPresent<T> extends BaseMatcher<T | null | undefined, never> {
   }
 
   public describeExpected(): string {
-    if (this.valueMatcher) {
-      return this.valueMatcher.describeExpected();
+    if (this._valueMatcher) {
+      return this._valueMatcher.describeExpected();
     } else {
-      return this.notAbsentMatcher.describeExpected();
+      return this._notAbsentMatcher.describeExpected();
     }
   }
 
   public describeActual(actual: T | null | undefined, data: never): string {
-    if (valueIsPresent(actual) && this.valueMatcher) {
-      return this.valueMatcher.describeActual(actual);
+    if (valueIsPresent(actual) && this._valueMatcher) {
+      return this._valueMatcher.describeActual(actual);
     }
 
-    return this.notAbsentMatcher.describeActual(actual);
+    return this._notAbsentMatcher.describeActual(actual);
   }
 }
 
-export function isPresent<T>(matcher?: Matcher<T, any>): Matcher<T | null | undefined, never> {
-  return new IsPresent(matcher);
-}
+export const isPresent = <T>(matcher?: Matcher<T, any>): Matcher<T | null | undefined, never> => new IsPresent<T>(matcher);

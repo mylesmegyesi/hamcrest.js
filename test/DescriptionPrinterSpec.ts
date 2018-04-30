@@ -19,7 +19,7 @@ describe("DescriptionPrinter", () => {
   });
 
   it("indents multi-line values separated with LF", () => {
-    const description = new DescriptionBuilder(`{\n  "a": 1\n}`, `{\n  "a": 1,\n  "b": 2\n}`).build();
+    const description = new DescriptionBuilder('{\n  "a": 1\n}', '{\n  "a": 1,\n  "b": 2\n}').build();
 
     assertThat(description, is(
       `${EOL}` +
@@ -34,7 +34,7 @@ describe("DescriptionPrinter", () => {
   });
 
   it("indents multi-line values separated with CRLF", () => {
-    const description = new DescriptionBuilder(`{\r\n  "a": 1\r\n}`, `{\r\n  "a": 1,\r\n  "b": 2\r\n}`).build();
+    const description = new DescriptionBuilder('{\r\n  "a": 1\r\n}', '{\r\n  "a": 1,\r\n  "b": 2\r\n}').build();
 
     assertThat(description, is(
       `${EOL}` +

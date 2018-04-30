@@ -101,8 +101,8 @@ describe("Printing", () => {
   });
 
   it("array with two items", () => {
-    assertThat(arrayPrinter(printNumber)([1, 2]), is(`[ 1, 2 ]`));
-    assertThat(printValue([1, 2]), is(`[ 1, 2 ]`));
+    assertThat(arrayPrinter(printNumber)([1, 2]), is("[ 1, 2 ]"));
+    assertThat(printValue([1, 2]), is("[ 1, 2 ]"));
   });
 
   it("array prints on multiple lines if any value exceeds 80 characters", () => {
@@ -134,8 +134,8 @@ describe("Printing", () => {
     const printSingle: Print<Single> = objectPrinter<Single>({
       a: printNumber,
     });
-    assertThat(printSingle({ a: 2 }), is(`{ a: 2 }`));
-    assertThat(printValue({ a: 2 }), is(`{ a: 2 }`));
+    assertThat(printSingle({ a: 2 }), is("{ a: 2 }"));
+    assertThat(printValue({ a: 2 }), is("{ a: 2 }"));
   });
 
   it("object prints on multiple lines if there is only one item but it exceeds 80 characters", () => {
@@ -203,10 +203,14 @@ describe("Printing", () => {
 
   it("prints non-plain objects that implement toString", () => {
     class Something {
-      public constructor(private a: number) {}
+      private readonly _a: number;
+
+      public constructor(a: number) {
+        this._a = a;
+      }
 
       public toString(): string {
-        return `Something (${this.a})`;
+        return `Something (${this._a})`;
       }
     }
 

@@ -1,9 +1,12 @@
-import valueIsNull = require("lodash.isnull");
+import isNull from "lodash.isnull";
 
 import { Matcher } from "../Matcher";
 
 import { matches } from "./MatchesPredicate";
 
-export function isNull<T>(): Matcher<T | null, never> {
-  return matches(null, (_, actual) => valueIsNull(actual));
-}
+const isNullMatcher = <T>(): Matcher<T | null, never> =>
+  matches<null, T | null>(null, (_, actual) => isNull(actual));
+
+export {
+  isNullMatcher as isNull,
+};
