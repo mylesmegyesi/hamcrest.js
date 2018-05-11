@@ -1,4 +1,4 @@
-import valueIsUndefined = require("lodash.isundefined");
+import isUndefined from "lodash.isundefined";
 
 export type MatchResult<T> = Readonly<{
   matches: boolean;
@@ -36,7 +36,7 @@ export class MatchResultBuilder<T> {
   }
 
   private maybeAddDiff(result: MatchResult<T>): MatchResult<T> {
-    if (valueIsUndefined(this._diff)) {
+    if (isUndefined(this._diff)) {
       return result;
     }
 
@@ -47,7 +47,7 @@ export class MatchResultBuilder<T> {
   }
 
   private maybeAddData(result: MatchResult<T>): MatchResult<T> {
-    if (valueIsUndefined(this._data)) {
+    if (isUndefined(this._data)) {
       return result;
     }
 

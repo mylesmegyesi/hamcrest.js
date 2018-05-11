@@ -1,0 +1,9 @@
+{
+  "extends": ["../tslint.json"],
+  "rules": {
+    "no-implicit-dependencies": [true, "dev"],
+
+    // testing call counts
+    "no-magic-numbers": false
+  }
+}

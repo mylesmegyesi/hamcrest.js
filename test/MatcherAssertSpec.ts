@@ -1,9 +1,28 @@
-import * as assert from "assert";
+import { default as assert } from "assert";
 import { EOL } from "os";
 
 import { AssertionError, assertThat } from "../src";
 
 import { MockMatcher } from "../src/MockMatcher";
+
+const catchAssertionError = (f: () => void, matcher: (e: AssertionError) => void): void => {
+  let thrownError: AssertionError | null = null;
+  try {
+    f();
+  } catch (e) {
+    if (!(e instanceof AssertionError)) {
+      throw e;
+    }
+
+    thrownError = e;
+  }
+
+  if (!thrownError) {
+    throw new Error("did not throw");
+  }
+
+  matcher(thrownError);
+};
 
 describe("MatcherAssert", () => {
   it("assertThat does nothing when the matcher matches", () => {
@@ -37,25 +56,6 @@ describe("MatcherAssert", () => {
       assert.equal(matcher.matchInvocations.length, 1);
     });
   });
-
-  function catchAssertionError(f: () => void, matcher: (e: AssertionError) => void): void {
-    let thrownError: AssertionError | null = null;
-    try {
-      f();
-    } catch (e) {
-      if (!(e instanceof AssertionError)) {
-        throw e;
-      }
-
-      thrownError = e;
-    }
-
-    if (!thrownError) {
-      throw new Error("did not throw");
-    }
-
-    matcher(thrownError);
-  }
 
   it("assertThat sets showDiff when return in the result", () => {
     const matcher = MockMatcher.builder()

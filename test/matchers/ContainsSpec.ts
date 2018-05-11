@@ -114,7 +114,7 @@ describe("contains", () => {
       `an Iterable containing:${EOL}` +
       `[${EOL}` +
       `  expected value${EOL}` +
-      `]`,
+      "]",
     ));
 
     assertThat(matcher, describeExpectedCalled(1));
@@ -138,7 +138,7 @@ describe("contains", () => {
       `  expected value 1,${EOL}` +
       `  expected value 2,${EOL}` +
       `  expected value 3${EOL}` +
-      `]`,
+      "]",
     ));
 
     assertThat(matcher1, describeExpectedCalled(1));
@@ -150,7 +150,7 @@ describe("contains", () => {
     assertThat(contains(), matcherDescribesActualAs<Iterable<number>>(
       `[${EOL}` +
       `  1${EOL}` +
-      `]`,
+      "]",
     ).given([1]));
   });
 
@@ -160,7 +160,7 @@ describe("contains", () => {
       `  1,${EOL}` +
       `  2,${EOL}` +
       `  3${EOL}` +
-      `]`,
+      "]",
     ).given([1, 2, 3]));
   });
 
@@ -170,7 +170,7 @@ describe("contains", () => {
       `  1,${EOL}` +
       `  2,${EOL}` +
       `  3${EOL}` +
-      `]`,
+      "]",
     ).given(new Set([1, 2, 3])));
   });
 });

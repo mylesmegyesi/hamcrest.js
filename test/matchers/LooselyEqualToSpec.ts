@@ -8,7 +8,7 @@ import {
 
 describe("LooselyEqualTo", () => {
   it("matches if two objects are loosely equal", () => {
-    const expected: string = "";
+    const expected = "";
 
     const matcher = looselyEqualTo<string, number>(expected);
 
@@ -30,7 +30,7 @@ describe("LooselyEqualTo", () => {
   it("describes the expected", () => {
     const matcher = looselyEqualTo<string, number>("0");
 
-    assertThat(matcher, matcherDescribesExpectedAs(`"0"`));
+    assertThat(matcher, matcherDescribesExpectedAs('"0"'));
   });
 
   it("describes the actual", () => {

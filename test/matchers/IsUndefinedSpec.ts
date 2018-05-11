@@ -11,8 +11,8 @@ describe("IsUndefined", () => {
     const matcher = isUndefined<number>();
 
     assertThat(matcher, matcherMatches<number | undefined>().andReturnsDiff({
-      expected: undefined,
       actual: undefined,
+      expected: undefined,
     }).given(undefined));
   });
 
@@ -20,8 +20,8 @@ describe("IsUndefined", () => {
     const matcher = isUndefined<number>();
 
     assertThat(matcher, matcherFails<number | undefined>().andReturnsDiff({
-      expected: undefined,
       actual: 1,
+      expected: undefined,
     }).given(1));
   });
 
@@ -29,8 +29,8 @@ describe("IsUndefined", () => {
     const matcher = isUndefined<null>();
 
     assertThat(matcher, matcherFails<null | undefined>().andReturnsDiff({
-      expected: undefined,
       actual: null,
+      expected: undefined,
     }).given(null));
   });
 

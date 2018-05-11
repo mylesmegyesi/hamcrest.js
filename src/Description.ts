@@ -5,33 +5,41 @@ export type DescriptionLine = Readonly<{
   value: string;
 }>;
 
-function indent(value: string, size: number): string {
+const indent = (value: string, size: number): string => {
   const indentBuffer = " ".repeat(size);
   const lines = value.split(/\r?\n/);
   return lines.join(`${EOL}${indentBuffer}`);
-}
+};
 
-function buildLines(lines: DescriptionLine[]): string {
+const buildLines = (lines: DescriptionLine[]): string => {
   const longestLabel = Math.max(...lines.map(line => line.label.length));
-  return EOL + lines.map(line => {
-    const bufferSize = longestLabel - line.label.length;
-    const buffer = " ".repeat(bufferSize);
-    const label = `${buffer}${line.label}`;
-    const separator = `: `;
-    const indentSize = label.length + separator.length;
-    const value = indent(line.value, indentSize);
-    return `${label}${separator}${value}`;
-  }).join(EOL) + EOL;
-}
+  return EOL
+    + lines
+      .map(line => {
+        const bufferSize = longestLabel - line.label.length;
+        const buffer = " ".repeat(bufferSize);
+        const label = `${buffer}${line.label}`;
+        const separator = ": ";
+        const indentSize = label.length + separator.length;
+        const value = indent(line.value, indentSize);
+        return `${label}${separator}${value}`;
+      })
+      .join(EOL)
+    + EOL;
+};
 
-const ACTUAL: string = "got";
-const EXPECTED: string = "Expected";
+const ACTUAL = "got";
+const EXPECTED = "Expected";
 
 export class DescriptionBuilder {
-  private _extraLines: DescriptionLine[] = [];
+  private readonly _extraLines: DescriptionLine[] = [];
+  private readonly _expected: string;
+  private readonly _actual: string;
 
-  public constructor(private readonly _expected: string,
-                     private readonly _actual: string) {}
+  public constructor(expected: string, actual: string) {
+    this._expected = expected;
+    this._actual = actual;
+  }
 
   public get extraLines(): ReadonlyArray<DescriptionLine> {
     return this._extraLines;

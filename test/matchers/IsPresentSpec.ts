@@ -29,8 +29,8 @@ describe("IsPresent", () => {
     );
 
     assertThat(matcher, matcherMatches<number | undefined>().andReturnsDiff({
-      expected: 1,
       actual: 1,
+      expected: 1,
     }).given(1));
   });
 
@@ -43,8 +43,8 @@ describe("IsPresent", () => {
     );
 
     assertThat(matcher, matcherFails<number | undefined>().andReturnsDiff({
-      expected: 2,
       actual: 1,
+      expected: 2,
     }).given(1));
   });
 

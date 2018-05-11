@@ -1,13 +1,14 @@
-import valueIsUndefined = require("lodash.isundefined");
+import isString from "lodash.isstring";
+import isUndefined from "lodash.isundefined";
 
 import { DescriptionBuilder } from "./Description";
 import { Matcher } from "./Matcher";
 import { Diff } from "./MatchResult";
 
 export class AssertionError extends Error {
-  public showDiff: boolean;
-  public expected?: any;
   public actual?: any;
+  public expected?: any;
+  public showDiff: boolean;
 
   public constructor(message: string, diff?: Diff) {
     super(message);
@@ -21,7 +22,7 @@ export class AssertionError extends Error {
   }
 }
 
-export function assertThat<A, T>(actual: A, matcher: Matcher<A, T>): void {
+export const assertThat = <A, T>(actual: A, matcher: Matcher<A, T>): void => {
   const matchResult = matcher.match(actual);
   if (matchResult.matches) {
     return;
@@ -32,17 +33,17 @@ export function assertThat<A, T>(actual: A, matcher: Matcher<A, T>): void {
   );
 
   const matchData = matchResult.data;
-  if (!valueIsUndefined(matchData)) {
+  if (!isUndefined(matchData)) {
     matcher.describeResult(matchData, builder);
   }
 
   const message = builder.build();
   const error = new AssertionError(message, matchResult.diff);
 
-  if (error.stack) {
+  if (isString(error.stack)) {
     const stackWithoutMessagePrepended = error.stack.slice(error.stack.indexOf(message) + message.length + 1);
     error.stack = stackWithoutMessagePrepended.replace(/^.*\r?\n/g, "");
   }
 
   throw error;
-}
+};

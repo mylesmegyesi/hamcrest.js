@@ -2,7 +2,7 @@ import { BaseMatcher } from "../BaseMatcher";
 import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
 
-const ANYTHING: string = "anything";
+const ANYTHING = "anything";
 
 export class Anything<T> extends BaseMatcher<T, never> {
   public match(actual: T): MatchResult<never> {
@@ -14,6 +14,4 @@ export class Anything<T> extends BaseMatcher<T, never> {
   }
 }
 
-export function anything<T>(): Matcher<T, never> {
-  return new Anything<T>();
-}
+export const anything = <T>(): Matcher<T, never> => new Anything<T>();

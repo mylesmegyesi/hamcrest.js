@@ -85,7 +85,7 @@ describe("HasProperty", () => {
   it("describes expected - no value matcher", () => {
     const hasPropertyMatcher = hasProperty<O, "b">("b");
 
-    assertThat(hasPropertyMatcher, matcherDescribesExpectedAs(`an object with property "b"`));
+    assertThat(hasPropertyMatcher, matcherDescribesExpectedAs('an object with property "b"'));
   });
 
   it("describes expected - with value matcher and a single line description", () => {
@@ -95,7 +95,7 @@ describe("HasProperty", () => {
       .build();
     const hasPropertyMatcher = hasProperty<O, "b">("b", valueMatcher);
 
-    assertThat(hasPropertyMatcher, matcherDescribesExpectedAs(`an object with property "b" matching something`));
+    assertThat(hasPropertyMatcher, matcherDescribesExpectedAs('an object with property "b" matching something'));
   });
 
   it("describes expected - with value matcher and a multi line description", () => {
@@ -108,7 +108,7 @@ describe("HasProperty", () => {
     assertThat(hasPropertyMatcher, matcherDescribesExpectedAs(
       `an object with property "b" matching:${EOL}` +
       `something1${EOL}` +
-      `something2`,
+      "something2",
     ));
   });
 
@@ -124,7 +124,7 @@ describe("HasProperty", () => {
       `{${EOL}` +
       `  a: 1,${EOL}` +
       `  b: 2${EOL}` +
-      `}`,
+      "}",
     ).given(actual));
   });
 });

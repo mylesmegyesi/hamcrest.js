@@ -3,12 +3,15 @@ import { Matcher } from "../Matcher";
 import { MatchResult } from "../MatchResult";
 
 class AllOf<T> extends BaseMatcher<T, never> {
-  public constructor(private matchers: Matcher<T, any>[]) {
+  private readonly _matchers: Matcher<T, any>[];
+
+  public constructor(matchers: Matcher<T, any>[]) {
     super();
+    this._matchers = matchers;
   }
 
   public match(actual: T): MatchResult<never> {
-    for (const matcher of this.matchers) {
+    for (const matcher of this._matchers) {
       const result = matcher.match(actual);
       if (!result.matches) {
         return result;
@@ -21,7 +24,7 @@ class AllOf<T> extends BaseMatcher<T, never> {
   }
 
   public describeExpected(): string {
-    const expected = this.matchers.map(d => d.describeExpected());
+    const expected = this._matchers.map(d => d.describeExpected());
     if (expected.length === 1) {
       return expected[0];
     }
@@ -30,6 +33,4 @@ class AllOf<T> extends BaseMatcher<T, never> {
   }
 }
 
-export function allOf<T>(...matchers: Matcher<T, any>[]): Matcher<T, never> {
-  return new AllOf<T>(matchers);
-}
+export const allOf = <T>(...matchers: Matcher<T, any>[]): Matcher<T, never> => new AllOf<T>(matchers);
