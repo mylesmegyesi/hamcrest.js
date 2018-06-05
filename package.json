@@ -4,6 +4,12 @@
   "description": "Matchers",
   "license": "MIT",
   "author": "Myles Megyesi",
+  "main": "out/src/index.js",
+  "files": [
+    "out/src/**/*.js",
+    "out/src/**/*.d.ts"
+  ],
+  "types": "out/src/index.d.ts",
   "dependencies": {
     "lodash.isboolean": "^3.0.3",
     "lodash.isequal": "^4.5.0",
