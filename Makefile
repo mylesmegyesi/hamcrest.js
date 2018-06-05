@@ -21,3 +21,7 @@ install:
 
 .PHONY: ci
 ci: install test lint
+
+.PHONY: clean
+clean:
+	rm -rf out
