@@ -1,26 +1,7 @@
 {
-  "compilerOptions": {
-    "declaration": true,
-    "declarationDir": "out",
-    "downlevelIteration": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "inlineSourceMap": true,
-    "lib": ["ES2017"],
-    "module": "commonjs",
-    "newLine": "lf",
-    "noEmitHelpers": true,
-    "noEmitOnError": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "outDir": "out",
-    "rootDir": ".",
-    "strict": true,
-    "target": "es2016"
-  },
-  "include": [
-    "./test/**/*.ts",
-    "./src/**/*.ts"
+  "files": [],
+  "references": [
+    { "path": "./src" },
+    { "path": "./test" }
   ]
 }

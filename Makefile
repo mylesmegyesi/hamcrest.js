@@ -1,7 +1,7 @@
 
 .PHONY: build
 build:
-	npx tsc --project tsconfig.json
+	npx tsc --build
 
 .PHONY: test
 test: build
@@ -21,3 +21,7 @@ install:
 
 .PHONY: ci
 ci: install test lint
+
+.PHONY: clean
+clean:
+	rm -rf out
